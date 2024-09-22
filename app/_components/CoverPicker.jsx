@@ -23,7 +23,7 @@ function CoverPicker({children,setNewCover}) {
     <DialogTrigger className='w-full'>
         {children}
     </DialogTrigger>
-    <DialogContent>
+    <DialogContent className="max-h-[70vh] overflow-y-auto py-5">
       <DialogHeader>
         <DialogTitle>Update Cover</DialogTitle>
         <DialogDescription>
@@ -33,14 +33,14 @@ function CoverPicker({children,setNewCover}) {
                 className={`${selectedCover==cover?.imageUrl
                   &&'border-primary border-2'} p-1 rounded-md`}
                 >
-                  <Image src={cover?.imageUrl} width={200} height={75}
+                  <Image src={cover?.imageUrl} width={200} height={75} alt='cover image'
                   className='h-[70px] w-full rounded-md object-cover' />
                 </div>
               ))}
             </div>
         </DialogDescription>
       </DialogHeader>
-      <DialogFooter className="">
+      <DialogFooter>
           <DialogClose asChild>
             <Button type="button" variant="secondary">
               Close

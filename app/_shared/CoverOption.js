@@ -1,44 +1,47 @@
 export default[
     {
-        imageUrl:'https://imagizer.imageshack.com/img924/5497/c9VeBg.png'
+        imageUrl:'https://i.postimg.cc/Qtzh85rZ/cover-01.jpg'
     },
     {
-        imageUrl:'https://imagizer.imageshack.com/img923/3686/EFARxP.png'
+        imageUrl:'https://i.postimg.cc/bNcd1XKc/cover-02.jpg'
     },
     {
-        imageUrl:'https://imagizer.imageshack.com/img924/7083/yiBqBD.jpg'
+        imageUrl:'https://i.postimg.cc/TY6YpVDT/cover-03.jpg'
     },
     {
-        imageUrl:'https://imagizer.imageshack.com/img922/9351/27yXzY.jpg'
+        imageUrl:'https://i.postimg.cc/vmqcn4d3/cover-04.jpg'
     },
     {
-        imageUrl:'https://imagizer.imageshack.com/img922/6413/hIaYl9.jpg'
+        imageUrl:'https://i.postimg.cc/MZyz2nrN/cover-05.jpg'
     },
     {
-        imageUrl:'https://imagizer.imageshack.com/img923/9301/A90BJV.jpg'
+        imageUrl:'https://i.postimg.cc/g2BWq8nX/cover-06.jpg'
     },
     {
-        imageUrl:'https://imagizer.imageshack.com/img923/1687/5MUWqV.jpg'
+        imageUrl:'https://i.postimg.cc/Pxs024hx/cover-07.jpg'
     },
     {
-        imageUrl:'https://imagizer.imageshack.com/img923/2347/iMFqgW.jpg'
+        imageUrl:'https://i.postimg.cc/kXqqn704/cover-08.jpg'
     },
     {
-        imageUrl:'https://imagizer.imageshack.com/img923/1443/YFfXeJ.jpg'
+        imageUrl:'https://i.postimg.cc/fRPG0srY/cover-09.jpg'
     },
     {
-        imageUrl:'https://imagizer.imageshack.com/img923/8417/Q2DFqf.jpg'
+        imageUrl:'https://i.postimg.cc/Wb5LTgmW/cover-10.jpg'
     },
     {
-        imageUrl:'https://imagizer.imageshack.com/img924/6807/JW8uuM.jpg'
+        imageUrl:'https://i.postimg.cc/Xqhfk2S1/cover-11.jpg'
     },
     {
-        imageUrl:'https://imagizer.imageshack.com/img924/6676/Ghv5CC.jpg'
+        imageUrl:'https://i.postimg.cc/pXzCBHrD/cover-12.jpg'
     },
     {
-        imageUrl:'https://imagizer.imageshack.com/img923/3863/ix1bGv.jpg'
+        imageUrl:'https://i.postimg.cc/mDB8P6BQ/cover-13.jpg'
     },
     {
-        imageUrl:'https://imagizer.imageshack.com/img922/5805/Hw5nOe.jpg'
+        imageUrl:'https://i.postimg.cc/Hsxv0K5z/cover-14.jpg'
+    },
+    {
+        imageUrl:'https://i.postimg.cc/wxSFJvqq/cover-15.jpg'
     }
 ]

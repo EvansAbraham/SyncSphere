@@ -6,7 +6,7 @@ function Logo() {
     <div className='flex items-center gap-2'>
       <Image src='/logo.svg' alt='logo'
       width={30} height={30}/>
-      <h2 className='font-bold text-xl'>Sync</h2>
+      <h2 className='font-bold hidden md:block text-xl'>Sync Sphere</h2>
     </div>
   )
 }
