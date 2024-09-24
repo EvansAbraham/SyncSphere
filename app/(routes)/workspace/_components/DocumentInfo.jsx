@@ -1,5 +1,4 @@
 "use client"
-
 import CoverPicker from '@/app/_components/CoverPicker'
 import EmojiPickerComponent from '@/app/_components/EmojiPickerComponent';
 import { db } from '@/config/firebaseConfig';
@@ -42,7 +41,7 @@ function DocumentInfo({params}) {
 
 
   return (
-    <div>
+    <div className='p-2'>
         {/* Cover  */}
         <CoverPicker setNewCover={(cover)=>{
             setCoverImage(cover);
@@ -60,7 +59,7 @@ function DocumentInfo({params}) {
                 </div>
         </CoverPicker>
         {/* Emoji Picker  */}
-        <div className='absolute ml-5 md:ml-10 px-7 md:px-20 mt-[-40px] cursor-pointer md:flex md:justify-start'>
+        <div className='absolute ml-5 md:ml-10 px-5 md:px-20 mt-[-40px] cursor-pointer'>
             <EmojiPickerComponent 
             setEmojiIcon={(emoji)=>{
                 setEmoji(emoji);
@@ -72,7 +71,7 @@ function DocumentInfo({params}) {
             </EmojiPickerComponent>
         </div>
         {/* File Name  */}
-        <div className='md:mt-5 mt-3 px-5 md:px-20 ml-5 md:ml-10 md:p-10 p-5 md:w-full max-w-[600px]'>
+        <div className='md:mt-5 mt-3 px-5 md:px-20 ml-5 md:ml-10 md:p-5 md:w-full max-w-[600px]'>
             <input type="text" 
             placeholder='Untitled Document'
             defaultValue={documentInfo?.documentName}

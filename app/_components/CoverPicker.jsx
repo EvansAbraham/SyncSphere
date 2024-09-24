@@ -26,7 +26,7 @@ function CoverPicker({children,setNewCover}) {
     <DialogContent className="max-h-[70vh] overflow-y-auto py-5">
       <DialogHeader>
         <DialogTitle>Update Cover</DialogTitle>
-        <DialogDescription>
+        <DialogDescription as='div'>
             <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 mt-3'>
               {CoverOption.map((cover,index)=>(
                 <div key={index} onClick={()=>setSelectedCover(cover?.imageUrl)}
