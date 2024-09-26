@@ -10,7 +10,7 @@ function Hero() {
         <div>
             <div className="relative pt-36 ml-auto">
                 <div className="lg:w-2/3 text-center mx-auto">
-                    <h1 className="text-gray-900 dark:text-white font-bold text-5xl md:text-6xl xl:text-7xl">Loop is where <span className="text-primary dark:text-white">work happens, in sync.</span></h1>
+                    <h1 className="text-gray-900 dark:text-white font-bold text-5xl md:text-6xl xl:text-7xl">Productivity Thrives When <span className="text-primary dark:text-white">Work is in Perfect Sync..</span></h1>
                     <p className="mt-8 text-gray-700 dark:text-gray-300">Sync Sphere is a collaborative workspace that lets teams create, share, and work together on projects seamlessly. It combines flexible pages with reusable components that sync across different apps, making it easy to stay organized and up-to-date.</p>
                     <div className="mt-10 flex flex-wrap justify-center gap-y-4 gap-x-6">
                         <a
