@@ -78,7 +78,7 @@ function SideNav({ params, isVisible, setIsVisible }) {
   };
 
   return (
-    <div className={`h-screen md:w-72 ${isVisible ? "" : "hidden"} z-10 md:block fixed bg-blue-50 p-5 shadow-md`}>
+    <div className={`h-screen md:w-72 ${isVisible ? "" : "hidden"} transition-all z-10 md:block fixed bg-blue-50 p-5 shadow-md`}>
       <div className="flex justify-between items-center">
         <Logo />
         <X className="h-5 w-5 text-gray-500 md:hidden cursor-pointer" onClick={() => setIsVisible(false)} />

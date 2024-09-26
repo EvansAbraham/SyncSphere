@@ -17,9 +17,9 @@ function DocumentOptions({doc,deleteDocument}) {
             <MoreVertical className='h-4 w-4'/>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-            <DropdownMenuItem
+            {/* <DropdownMenuItem
             className="flex gap-2"> 
-            <FileText className='h-4 w-4'/>Export to PDF</DropdownMenuItem>
+            <FileText className='h-4 w-4'/>Export to PDF</DropdownMenuItem> */}
             <DropdownMenuItem 
             onClick={()=>deleteDocument(doc?.id)}
             className="flex gap-2 text-red-500"> 

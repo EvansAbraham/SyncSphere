@@ -8,7 +8,6 @@ import Marker from '@editorjs/marker';
 import InlineCode from '@editorjs/inline-code';
 import Underline from '@editorjs/underline';
 import Hyperlink from 'editorjs-hyperlink';
-import Undo from 'editorjs-undo';
 import Table from '@editorjs/table';
 import SimpleImage from 'simple-image-editorjs';
 import List from "@editorjs/list";
@@ -47,20 +46,33 @@ function RichTextEditor({ params }) {
     const unsubscribe = onSnapshot(doc(db, 'documentOutput', params?.documentid), (docSnapshot) => {
       const data = docSnapshot.data();
       if (data) {
-        // Ensure we render the content only if edited by another user or if it's the first fetch
         if (data.editedBy !== user?.primaryEmailAddress?.emailAddress || !isFetched) {
           console.log("Fetching document output...");
+
           if (data.output) {
-            editor?.render(JSON.parse(data.output)); // Render the document in the editor
+            try {
+              const parsedOutput = data.output.trim() ? JSON.parse(data.output) : null;
+
+              if (parsedOutput) {
+                editor?.render(parsedOutput);
+                console.log("Document rendered in the editor.");
+              } else {
+                console.log("Output is empty, no content to render.");
+              }
+            } catch (error) {
+              console.error("Error parsing JSON from Firestore:", error);
+            }
+          } else {
+            console.log("No output found in the document.");
           }
-          isFetched = true; // Set the flag to true after fetching
+
+          isFetched = true;
         }
       } else {
         console.log("No document found!");
       }
     });
 
-    // Clean up the listener when the component unmounts
     return () => unsubscribe();
   };
 
@@ -109,6 +121,19 @@ function RichTextEditor({ params }) {
           checklist: {
             class: Checklist,
             inlineToolbar: true,
+            // Wrap interaction with DOM elements in try-catch
+            toggleCheckbox: (event) => {
+              try {
+                const checkbox = event.target.querySelector('input[type="checkbox"]');
+                if (checkbox) {
+                  checkbox.click();
+                } else {
+                  console.error('Checkbox not found!');
+                }
+              } catch (error) {
+                console.error('Error interacting with checkbox:', error);
+              }
+            }
           },
         },
       });
