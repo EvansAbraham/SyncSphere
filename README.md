@@ -42,12 +42,10 @@ To get started with SyncSphere, follow these steps:
 
 ## Configuration
 
-Add your Gemini API credentials and any other required environment variables to the `.env` file in the project root. Create a `.env` file with the following structure:
+ENV Configuration
 
-```env
-GEMINI_API_KEY=your_api_key
-GEMINI_API_SECRET=your_api_secret
-```
+Add your Gemini API credentials and any other required environment variables to the `.env` file in the project root. Create a `.env.example` file is given for your referance to add your private key in your actualy `.env` file.
+
 
 ## Contributing
 
@@ -79,13 +77,9 @@ We welcome contributions to SyncSphere! If you’d like to contribute, please fo
 
    Open a pull request on GitHub and describe your changes.
 
-## License
-
-SyncSphere is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
-
 ## Contact
 
-For any questions or feedback, please open an issue on GitHub or contact us at [your-email@example.com].
+For any questions or feedback, please open an issue on GitHub.
 
 ---
 
