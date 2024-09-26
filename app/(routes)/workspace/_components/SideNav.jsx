@@ -94,6 +94,10 @@ function SideNav({ params, isVisible, setIsVisible }) {
       </div>
       {/* Document List */}
       <DocumentList documentList={documentList} params={params}/>
+      {/* Button back to dashboard */}
+      <div className="absolute bottom-36 md:bottom-28">
+        <Button variant="outline" onClick={() => router.push("/dashboard")}>Dashboard</Button>
+      </div>
       {/* Progress Bar */}
       <div className='absolute bottom-10 w-[85%]'>
         <Progress value={(documentList?.length/MAX_FILE)*100} />

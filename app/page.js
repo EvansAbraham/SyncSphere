@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
+import Hero from "./_components/Hero";
+import Header from "./_components/Header";
 
 export default function Home() {
   return (
     <div>
-      <h1>Hello this is a test text to check the project!</h1>
-      <Button className="mt-5 ml-5">Test Button</Button>
+      <Header/>
+      <Hero/>
     </div>
   );
 }

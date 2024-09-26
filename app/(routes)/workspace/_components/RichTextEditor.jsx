@@ -17,11 +17,12 @@ import Quote from '@editorjs/quote';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { db } from '@/config/firebaseConfig';
 import { useUser } from '@clerk/nextjs';
+import GenerateAITemplate from './GenerateAITemplate';
 
 function RichTextEditor({ params }) {
-  const ref = useRef();
-  let editor;
-  const { user } = useUser();
+  const ref = useRef(); // Reference for the EditorJS instance
+  let editor; // EditorJS instance
+  const { user } = useUser(); // User information from Clerk
   const [documentOutput, setDocumentOutput] = useState(null);
   let isFetched = false; // Track if the document has been fetched
 
@@ -54,7 +55,7 @@ function RichTextEditor({ params }) {
               const parsedOutput = data.output.trim() ? JSON.parse(data.output) : null;
 
               if (parsedOutput) {
-                editor?.render(parsedOutput);
+                editor?.render(parsedOutput); // Render the parsed output
                 console.log("Document rendered in the editor.");
               } else {
                 console.log("Output is empty, no content to render.");
@@ -66,14 +67,14 @@ function RichTextEditor({ params }) {
             console.log("No output found in the document.");
           }
 
-          isFetched = true;
+          isFetched = true; // Mark document as fetched
         }
       } else {
         console.log("No document found!");
       }
     });
 
-    return () => unsubscribe();
+    return () => unsubscribe(); // Clean up the listener on unmount
   };
 
   const InitEditor = () => {
@@ -121,7 +122,6 @@ function RichTextEditor({ params }) {
           checklist: {
             class: Checklist,
             inlineToolbar: true,
-            // Wrap interaction with DOM elements in try-catch
             toggleCheckbox: (event) => {
               try {
                 const checkbox = event.target.querySelector('input[type="checkbox"]');
@@ -138,13 +138,42 @@ function RichTextEditor({ params }) {
         },
       });
 
-      ref.current = editor;
+      ref.current = editor; // Assign the editor instance to the ref
     }
   };
 
   return (
     <div className='lg:-ml-20'>
       <div id="editorjs" className=''></div>
+      <div className='fixed bottom-10 md:ml-80 left-0 z-10'>
+        <GenerateAITemplate setGenerateAIOutput={(output) => {
+          try {
+            // Process blocks to ensure they are in the correct format for Editor.js
+            output.blocks = output.blocks.map(block => {
+              // Adjust table block formatting
+              if (block.type === 'table' && block.data?.content) {
+                block.data.content = block.data.content.map(row =>
+                  Array.isArray(row) ? row.map(cell => (typeof cell === 'object' ? Object.values(cell).join(', ') : cell)) : [row]
+                );
+              }
+              return block; // Return the modified block
+            });
+
+            // Fetch the current content of the editor
+            ref.current.save().then(existingContent => {
+              const mergedOutput = {
+                blocks: [...existingContent.blocks, ...output.blocks] // Append the new blocks to the existing ones
+              };
+
+              // Render the merged content in the editor
+              editor.render(mergedOutput);
+              console.log("AI content appended successfully.");
+            });
+          } catch (error) {
+            console.error("Error rendering AI content:", error);
+          }
+        }} />
+      </div>
     </div>
   );
 }

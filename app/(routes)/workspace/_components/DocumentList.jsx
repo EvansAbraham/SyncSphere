@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 
 function DocumentList({ documentList, params }) {
   const router = useRouter();
-
+  
   const DeleteDocument = async (docId) => {
     await deleteDoc(doc(db, "workspaceDocuments", docId));
     await deleteDoc(doc(db, "documentOutput", docId));
