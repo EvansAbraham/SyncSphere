@@ -32,10 +32,7 @@ jobs:
           node-version: 24
           cache: npm
 
-      - name: Synchronize dependency lockfile
-        run: npm install --package-lock-only
-
-      - name: Install dependencies
+      - name: Install locked dependencies
         run: npm ci
 
       - name: Run ESLint
@@ -46,11 +43,3 @@ jobs:
 
       - name: Build production application
         run: npm run build
-
-      - name: Upload generated lockfile for review
-        uses: actions/upload-artifact@v4
-        with:
-          name: syncsphere-package-lock
-          path: package-lock.json
-          if-no-files-found: error
-          retention-days: 7
