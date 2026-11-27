@@ -6,8 +6,7 @@ on:
       - agentic-development
   pull_request:
     branches:
-      - main
-    # Only validate PRs originating from the recovery branch.
+      - agentic-development
   workflow_dispatch:
 
 permissions:
@@ -30,7 +29,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - name: Install locked dependencies
@@ -39,19 +38,19 @@ jobs:
       - name: Run lint (when ESLint configuration exists)
         shell: bash
         run: |
-          if [ -f .eslintrc ] || [ -f .eslintrc.js ] || [ -f .eslintrc.json ] || [ -f .eslintrc.yaml ] || [ -f .eslintrc.yml ] || [ -f eslint.config.js ] || [ -f eslint.config.mjs ]; then
+          if [ -f .eslintrc ] || [ -f .eslintrc.js ] || [ -f .eslintrc.cjs ] || [ -f .eslintrc.json ] || [ -f .eslintrc.yaml ] || [ -f .eslintrc.yml ] || [ -f eslint.config.js ] || [ -f eslint.config.cjs ] || [ -f eslint.config.mjs ]; then
             npm run lint
           else
-            echo "::warning::Lint skipped: repository has no ESLint configuration yet. Add lint configuration during CI foundation work."
+            echo "::warning::Lint skipped: no ESLint configuration exists yet. Establish lint configuration during CI foundation work."
           fi
 
       - name: Run tests (when test script exists)
         shell: bash
         run: |
           if node -e "process.exit(require('./package.json').scripts?.test ? 0 : 1)"; then
-            npm test -- --run
+            npm test
           else
-            echo "::warning::Tests skipped: no test script is defined yet. Add the test framework and test script before treating CI as a complete quality gate."
+            echo "::warning::Tests skipped: no test script is defined yet. Establish the test framework and test script before treating CI as a complete quality gate."
           fi
 
       - name: Build production application
