@@ -39,6 +39,18 @@ jobs:
           npm_config_fetch_retries: 1
           npm_config_fetch_timeout: 30000
 
+      - name: Install dependencies from synchronized lockfile
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run tests
+        run: npm run test:run
+
+      - name: Build production application
+        run: npm run build
+
       - name: Commit lockfile if changed
         shell: bash
         run: |
