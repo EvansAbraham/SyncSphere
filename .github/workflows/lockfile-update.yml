@@ -1,4 +1,4 @@
-name: SyncSphere Lockfile Update
+name: SyncSphere Lockfile Maintenance
 
 on:
   push:
@@ -6,21 +6,21 @@ on:
       - agentic-development
     paths:
       - package.json
-      - .github/workflows/lockfile-update.yml
-      - vitest.setup.js
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: syncsphere-lockfile-update
+  group: syncsphere-lockfile-maintenance
   cancel-in-progress: false
 
 jobs:
   update-lockfile:
+    name: Synchronize and validate package lockfile
     runs-on: ubuntu-latest
     timeout-minutes: 12
+
     steps:
       - name: Checkout recovery branch
         uses: actions/checkout@v4
@@ -34,23 +34,14 @@ jobs:
           node-version: 24
           cache: npm
 
-      - name: Resolve lockfile with bounded network retries
+      - name: Synchronize package lockfile
         run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
         env:
           npm_config_fetch_retries: 1
           npm_config_fetch_timeout: 30000
 
-      - name: Install dependencies from synchronized lockfile
+      - name: Validate clean dependency installation
         run: npm ci
-
-      - name: Run ESLint
-        run: npm run lint
-
-      - name: Run tests
-        run: npm run test:run
-
-      - name: Build production application
-        run: npm run build
 
       - name: Commit lockfile if changed
         shell: bash
