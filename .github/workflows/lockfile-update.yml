@@ -7,6 +7,7 @@ on:
     paths:
       - package.json
       - .github/workflows/lockfile-update.yml
+      - vitest.setup.js
   workflow_dispatch:
 
 permissions:
