@@ -2,157 +2,138 @@
 
 SyncSphere is a collaborative workspace for organizing workspaces and documents, editing rich-text content, and using Gemini-powered AI to generate document templates.
 
-> **Project status: Recovery and stabilization in progress.** SyncSphere is an early-stage application being brought back under active development. Features described below are based on the existing repository; build, security, and production readiness are still being verified.
+> **Project status: Recovery and modernization in progress.** SyncSphere is an existing product being recovered and incrementally modernized. Repository features and behavior are still being verified; this is not a greenfield rewrite.
 
-## Features
+## Recovery goals
 
-- **Workspace organization** — create and organize workspaces.
-- **Document management** — create, rename, and delete workspace documents.
-- **Rich-text editor** — edit content with Editor.js and supported blocks, including headings, lists, checklists, tables, quotes, code, and other configured tools.
-- **Workspace customization** — customize workspaces with emoji and cover images.
-- **Authentication** — sign-in and sign-up flows powered by Clerk.
-- **Cloud data** — Firebase / Firestore integration for workspace and document data.
-- **AI template generation** — Gemini-powered template generation from the editor workflow.
-- **Workspace navigation** — navigate workspace documents and switch workspace context.
+- Secure authentication, authorization, and data access.
+- Preserve existing product features and user data.
+- Stabilize workspace/document workflows, editor lifecycle, and persistence.
+- Modernize the runtime and framework deliberately, using compatibility checks and incremental changes.
+- Establish reliable tests, linting, CI gates, and maintainable developer workflows.
+- Improve responsive/mobile usability, editing, and PDF export without unnecessary redesign.
 
-Some collaboration behavior and backend security controls have not yet been fully verified. Real-time data subscriptions should not be treated as conflict-safe, fully synchronized collaborative editing.
+## Existing features (verification in progress)
 
-## Technology Stack
+- Workspace organization and customization (emoji and cover images).
+- Document creation, renaming, deletion, and navigation.
+- Rich-text editing using Editor.js and configured blocks.
+- Clerk authentication.
+- Firebase / Firestore workspace and document data.
+- Gemini-powered document/template generation.
 
-| Area | Technology |
-| --- | --- |
-| Framework | Next.js 14 (App Router) |
-| UI | React 18 |
-| Authentication | Clerk |
-| Database / data synchronization | Firebase Firestore |
-| Rich-text editor | Editor.js |
-| AI | Google Gemini API |
-| Styling | Tailwind CSS, Radix UI |
+Real-time subscriptions should not be assumed to provide conflict-safe collaborative editing. Security, runtime behavior, and production readiness are being verified.
 
-## Getting Started
+## Technology direction
+
+| Area | Current repository baseline | Recovery target |
+| --- | --- | --- |
+| Runtime | Node.js 20 CI | Node.js 24 LTS |
+| Framework | Next.js 14 (App Router) | Next.js 16 |
+| UI | React 18 | React 19 |
+| Language | JavaScript / JSX / MJS | JavaScript (ES6+) / JSX retained |
+| Package manager | npm | npm |
+| Authentication | Clerk | Clerk (compatibility review and update as needed) |
+| Data | Firebase / Firestore | Firebase / Firestore (security and integrity review) |
+| Editor | Editor.js | Editor.js ecosystem assessment and maintenance plan |
+| AI | Google Gemini SDK | Gemini SDK/server-side integration with security review |
+| Styling | Tailwind CSS 3, Radix UI | Modern supported compatible versions after evaluation |
+| Hosting | Vercel | Vercel (deployment configuration reviewed) |
+
+Target versions describe the intended direction, not the versions currently installed. Upgrades will be staged, compatibility-tested, and documented. No blanket dependency upgrades.
+
+### Language strategy
+
+JavaScript remains the project language during recovery. Existing `.js`, `.jsx`, and `.mjs` files are expected and preferred. A TypeScript migration is **deferred (P3)** and is not a recovery requirement.
+
+## Getting started
 
 ### Prerequisites
 
-- Node.js 20.x (recommended for the recovery CI environment)
-- npm
-- Access to the required Clerk, Firebase, and Gemini configuration for features that depend on them
+- Node.js 24 LTS is the modernization target; use the currently checked-in dependency/runtime baseline until migration is completed and documented.
+- npm.
+- Clerk, Firebase, and Gemini configuration for the features you intend to run.
 
 ### 1. Clone the repository
 
 ```bash
 git clone https://github.com/EvansAbraham/SyncSphere.git
 cd SyncSphere
-```
-
-### 2. Check out the recovery branch
-
-Development and recovery work currently happens on `agentic-development`, not `main`.
-
-```bash
 git checkout agentic-development
 ```
 
-### 3. Install dependencies
+### 2. Install dependencies
 
-Use the committed lockfile for a reproducible dependency installation:
+Use the committed lockfile for reproducible installs:
 
 ```bash
 npm ci
 ```
 
-### 4. Configure environment variables
+### 3. Configure environment
 
-Copy the provided sample file to your local environment file:
+Copy the sample file:
 
 ```bash
 cp .env.sample .env
 ```
 
-Fill in the required values for the services you configure. **Never commit your real `.env` file or credentials.**
+Fill in required values for the services you configure. **Never commit your real `.env` or credentials.** Environment variable usage currently has inconsistencies that will be reconciled during recovery. Do not assume every integration works until setup has been verified.
 
-Environment variables currently documented by the sample:
+AI configuration is under security review. Keep credentials private; Gemini calls must be secured behind an approved server-side boundary before production use.
 
-| Variable | Purpose |
-| --- | --- |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk frontend key |
-| `CLERK_SECRET_KEY` | Clerk server secret |
-| `NEXT_PUBLIC_CLERK_SIGN_IN_URL` | Sign-in route configuration |
-| `NEXT_PUBLIC_CLERK_SIGN_UP_URL` | Sign-up route configuration |
-| `NEXT_PUBLIC_FIREBASE_API_KEY` | Firebase client API key |
-| `NEXT_FIREBASE_AUTH_DOMAIN` | Firebase auth-domain setting |
-| `NEXT_FIREBASE_STORAGE_BUCKET` | Firebase storage bucket setting |
-| `NEXT_FIREBASE_MESSAGING_SENDER_ID` | Firebase messaging sender ID |
-| `NEXT_FIREBASE_MEASUREMENT_ID` | Firebase measurement ID |
-| `NEXT_PUBLIC_MAX_FILE_COUNT` | File count setting used by the app |
-| `NEXT_GEMINI_API_KEY` | Gemini credential placeholder (AI configuration is under review) |
-
-> **Configuration caveat:** Environment variable usage in the application has known inconsistencies with the sample file. Configuration will be reconciled during the recovery work. Do not assume every integration works with these values until the setup has been verified.
-
-> **Security note:** The current AI implementation requires a security review before it should be used with a production API credential. Keep keys private and do not expose secrets through client-side variables, screenshots, commits, or issue reports. The AI integration is planned to be moved behind a server-side boundary as part of recovery.
-
-### 5. Start the development server
+### 4. Run locally
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open http://localhost:3000.
 
-## Available Scripts
+## Available scripts
 
 | Command | Description |
 | --- | --- |
-| `npm run dev` | Start the local Next.js development server |
+| `npm run dev` | Start the Next.js development server |
 | `npm run build` | Build the production application |
-| `npm run start` | Run the production server after a successful build |
-| `npm run lint` | Run Next.js linting (configuration is being established) |
+| `npm run start` | Run the production server after building |
+| `npm run lint` | Linting script (configuration is being established) |
 
-## CI and Development Workflow
+## CI and workflow
 
-GitHub Actions CI is configured in `.github/workflows/ci.yml` and currently targets the recovery branch:
+The existing GitHub Actions workflow currently uses Node.js 20 and conditionally runs lint/tests depending on whether their configuration/scripts exist; it builds the app. CI is a known modernization task.
 
-- Installs dependencies using `npm ci`
-- Runs lint if an ESLint configuration is present
-- Runs tests if a test script is present
-- Builds the application
+**CI target:** Node.js 24, reproducible `npm ci`, enforced linting and tests once established, production build, and relevant security/regression checks. PR validation will be aligned to the recovery branch. CI improvements will be implemented separately from this documentation change.
 
-Lint and test steps may currently be skipped with warnings because the test framework and lint configuration have not yet been established. A passing production build alone is **not** a full quality or security guarantee. CI will be strengthened as the project recovery progresses.
+## Branch safety
 
-### Branch and pull-request flow
+- Recovery work belongs on `agentic-development` (or focused branches based on it).
+- `main` is production-bound and must remain untouched during recovery.
+- Keep commits focused and review CI results.
+- Do not merge to `main`, deploy production, or perform destructive data migrations without explicit project-owner approval.
 
-1. Work on `agentic-development` or a short-lived feature branch based on it.
-2. Commit small, focused changes with clear messages.
-3. Push changes and review the CI results.
-4. Open a pull request into `main` only after the changes are ready for review.
-5. Merge only after review and the required checks are satisfied.
+## Recovery priorities
 
-Production deployment is managed separately through the repository's Vercel integration. Confirm the Vercel production branch and preview behavior in project settings before relying on this flow.
+1. **P0 — Security and data integrity:** authentication/authorization, Firestore access rules, credential handling, safe mutations, content preservation.
+2. **P1 — Modernization and core stability:** Node 24 / Next.js 16 / React 19 compatibility, dependency alignment, reliable CRUD and persistence, editor/listener lifecycle, CI foundations.
+3. **P2 — Product quality:** mobile responsiveness, editor UX, accessibility, PDF export, and regression coverage.
+4. **P3 — Deferred:** TypeScript migration and other nonessential enhancements.
 
-## Current Limitations and Recovery Priorities
+Modernization will be incremental. Critical security fixes must not be delayed by stack upgrades; dependency migrations must be staged to minimize regressions.
 
-SyncSphere is being stabilized. Areas that need verification or improvement include:
+## Documentation
 
-- Firestore security rules and workspace/document authorization.
-- Server-side handling and security of Gemini requests and API keys.
-- Environment-variable consistency and configuration validation.
-- Editor lifecycle, save behavior, listener cleanup, and concurrent-edit safety.
-- Reliable workspace/document creation and deletion, including failure handling.
-- Automated tests, lint configuration, CI enforcement, accessibility, and responsive behavior.
-
-This list reflects recovery work in progress; some items are findings from static inspection and still require reproduction or runtime validation.
+- [Project Charter](docs/PROJECT_CHARTER.md)
+- [Product Requirements](docs/PRODUCT_REQUIREMENTS.md)
+- [Recovery Roadmap](docs/RECOVERY_ROADMAP.md)
+- [Technical Plan](docs/TECHNICAL_PLAN.md)
+- [Development Guide](docs/DEVELOPMENT_GUIDE.md)
+- [Agent Instructions](AGENTS.md)
 
 ## Contributing
 
-Contributions and bug reports are welcome. During recovery, please keep changes focused and avoid large rewrites or dependency migrations without discussion.
-
-1. Fork the repository or create a branch from the recovery branch.
-2. Make a focused change.
-3. Run the checks that are available locally.
-4. Commit with a descriptive message.
-5. Open a pull request targeting `agentic-development` and include the context, testing performed, and any remaining limitations.
-
-Please report issues through the [GitHub Issues](https://github.com/EvansAbraham/SyncSphere/issues) page. Do not include API keys, tokens, passwords, or other private configuration in issues.
+During recovery, please keep changes focused and avoid large rewrites or dependency migrations without discussion. Run available checks and report accurately what was and was not verified. Pull requests should target `agentic-development` and include context, checks run, and known limitations. Never include credentials or private configuration in issues or commits.
 
 ## License
 
-No license file is currently present in the repository. Until a license is added, the project should not be assumed to grant open-source reuse permissions.
+No license file is currently present. Until one is added, the project should not be assumed to grant open-source reuse permissions.
