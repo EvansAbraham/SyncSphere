@@ -2,238 +2,104 @@
 
 **Project:** SyncSphere  
 **Document Status:** Approved  
-**Version:** 0.1  
+**Version:** 0.2  
 **Document Type:** Repository Agent Instructions  
 **Location:** Repository Root  
 **Approved By:** Evans Abraham (Project Owner)
 
----
-
 ## 1. Project Context
 
-SyncSphere is an existing collaborative workspace and document application undergoing recovery, stabilization, security improvement, and modernization.
+SyncSphere is an existing collaborative workspace/document app undergoing recovery, stabilization, security improvements, and modernization. This is not a greenfield rewrite. Preserve existing features and data unless changes/removal are explicitly approved.
 
-This is **not a greenfield project and not an invitation to rewrite the application from scratch**.
+## 2. Approved Stack Direction
 
-Preserve existing functionality unless removal, replacement, or modification is explicitly approved.
+- **Runtime target:** Node.js 24 LTS.
+- **Framework target:** Next.js 16 (App Router).
+- **UI target:** React 19.
+- **Language:** JavaScript ES6+, JSX, MJS retained.
+- **Package manager:** npm.
+- **Authentication:** Clerk.
+- **Data:** Firebase / Firestore.
+- **Editor:** Editor.js pending compatibility/maintenance assessment.
+- **AI:** Gemini, server-side only.
+- **Styling:** Tailwind CSS and Radix UI, compatibility evaluated.
+- **Hosting:** Vercel.
 
-## 2. Tech Stack & Canonical Commands
+Targets are not proof of installed/current versions. Verify exact versions and configuration before working. No TypeScript migration during recovery; it is P3/deferred.
 
-### Stack
+### Package management
+Use npm exclusively and `npm ci` for clean lockfile installs. Do not casually regenerate the lockfile or switch to yarn/pnpm.
 
-- Next.js 14 (App Router)
-- React 18
-- Clerk Authentication
-- Firebase / Firestore
-- Editor.js
-- Google Gemini API
-- Tailwind CSS
-- Vercel
+### Commands
+Inspect `package.json` first. Known scripts include `npm run dev`, `npm run build`, `npm run start`, and `npm run lint`; verify availability/configuration. A test script is not assumed. Report missing, blocked, or failed checks honestly.
 
-### Package Manager
+## 3. Security Invariants
 
-- Use `npm` exclusively.
-- Use `npm ci` for clean, lockfile-based dependency installations.
-- Never switch to `yarn` or `pnpm`.
-- Do not modify or regenerate the lockfile unnecessarily.
+### Server-side AI
+All Gemini requests run server-side. Credentials must never be client-exposed, use `NEXT_PUBLIC_*`, committed, returned to the browser, or included in client bundles. AI endpoints require authentication, authorization for private context, validation, abuse controls, and safe error handling.
 
-### Canonical Commands
+### Identity and authorization
+Clerk is the identity provider. Authenticate and authorize all protected operations. Verify workspace ownership/membership and document relationships for reads, creates, updates, and deletes. Never trust client-supplied identifiers or permissions alone. Authentication is not blanket authorization; deny by default if access cannot be verified.
 
-| Purpose | Command |
-|---|---|
-| Install dependencies | `npm ci` |
-| Development server | `npm run dev` |
-| Lint | `npm run lint` |
-| Tests | `npm test -- --run` |
-| Production build | `npm run build` |
+### Environment and secrets
+Never commit `.env`, credentials, private config, or real user data. Use sample files with placeholders. Confirm variable names from source/config; do not invent them. Investigate sample/code discrepancies. Keep secrets out of bundles, logs, screenshots, and docs.
 
-- Skip linting only if an ESLint configuration has not yet been established.
-- Skip testing only if a `test` script has not yet been defined.
-- If a required command fails, investigate and report the actual failure. Do not silently skip, bypass, or misrepresent it.
-- Do not change the project's established tooling to accommodate an agent's preference.
+### Data integrity
+Validate data at boundaries. Prevent stale saves, duplicate mutations, orphaned records, and silent content loss. Protect existing content. Destructive operations and migrations require owner approval.
 
-## 3. Non-Negotiable Architecture & Security Invariants
+## 4. Architecture and Engineering Boundaries
 
-### Server-Side AI Only
+Keep Next.js app structure and logical separation between presentation, validation/business logic, data access, auth, and AI orchestration. Keep handlers focused. Avoid unnecessary abstractions, dependencies, services, or wholesale restructuring. JavaScript/JSX/MJS is canonical during recovery; do not introduce TS migration.
 
-- All Google Gemini API calls must execute strictly on the server through API routes, Server Actions, or other approved server-side modules.
-- Gemini API keys and credentials must never be exposed in client-side code, client bundles, browser requests, or `NEXT_PUBLIC_*` environment variables.
-- AI requests must be subject to authentication, input validation, appropriate abuse protection, and error handling.
-- Do not move AI execution to the client to simplify implementation.
+## 5. Source of Truth
 
-### Authentication & Ownership Enforcement
+Consult relevant approved docs:
+- `docs/PROJECT_CHARTER.md` — mission, scope, governance.
+- `docs/PRODUCT_REQUIREMENTS.md` — product scope and acceptance.
+- `docs/RECOVERY_ROADMAP.md` — milestones and gates.
+- `docs/TECHNICAL_PLAN.md` — technical direction.
+- `docs/DEVELOPMENT_GUIDE.md` — workflow and verification.
 
-- Clerk manages user identity and authentication.
-- Every protected Firestore operation and server endpoint must enforce authentication and authorization.
-- Verify workspace membership, ownership, and document access on the trusted server side as appropriate.
-- Never trust client-supplied user IDs, workspace IDs, ownership claims, or permissions without server-side verification.
-- Authentication alone does not establish authorization to access a particular resource.
+If docs conflict, identify the discrepancy; do not silently override approvals or expand scope.
 
-### Environment Hygiene
+## 6. Branch Safety
 
-- Never commit `.env` files, secrets, API keys, credentials, tokens, or private configuration.
-- `.env.example` is the canonical place to document required environment variable names using safe placeholders.
-- Never place real credentials in example files, logs, test fixtures, documentation, or commits.
-- Do not invent environment variable names or silently change existing configuration contracts.
-- Investigate discrepancies between application code, existing environment configuration, and `.env.example` before making configuration changes.
+- `main`: production-bound, read-only during recovery.
+- `agentic-development`: primary recovery branch.
+- Use feature branches when useful.
+- Verify active branch and working tree before edits.
+- Never merge, deploy, or alter production configuration without explicit authorization.
 
-### Modular Boundaries
+## 7. Mandatory Inspection
 
-- Keep route handlers thin.
-- Isolate business logic, data access, validation, and AI orchestration into appropriate modules.
-- Avoid monolithic files and unnecessary coupling.
-- Reuse established patterns where they are sound.
-- Introduce new abstractions only when they provide meaningful separation, maintainability, or testability.
-- Do not restructure unrelated code merely to satisfy stylistic preferences.
+Inspect affected files, callers, data flow, dependencies, conventions, tests, and behavior before changing code. Establish a baseline where practical. No blind edits or speculative rewrites.
 
-## 4. Source of Truth
+## 8. Scope Discipline
 
-Before undertaking work, consult the relevant approved project documents:
+Work only within approved scope. Preserve existing functionality and user changes. Avoid unrelated cleanup, broad rewrites, feature removal, and dependency churn. Ask approval before significant architectural changes, breaking behavior, migrations, paid services, scope expansion, or high-impact risks.
 
-- `docs/PROJECT_CHARTER.md` — project mission, boundaries, principles, and governance.
-- `docs/PRODUCT_REQUIREMENTS.md` — product scope, functionality, and acceptance requirements.
-- `docs/RECOVERY_ROADMAP.md` — approved sequencing and milestone scope, once available.
-- `docs/TECHNICAL_PLAN.md` — architecture and technical decisions, once available.
-- `docs/DEVELOPMENT_GUIDE.md` — engineering and verification workflow, once available.
+## 9. Engineering Practices
 
-Do not invent requirements or silently treat suggestions as approved decisions.
+Prefer TDD (RED → GREEN → REFACTOR). Add/update tests and regression coverage as appropriate. Validate external/client/stored/AI data. Handle failures visibly and preserve content. Keep changes focused and reviewable.
 
-If documents conflict, identify the conflict. Do not silently override approved requirements or expand scope.
+## 10. CI and Verification
 
-## 5. Branch Safety
+Target CI checks: Node 24, `npm ci`, lint, tests, build, and relevant security/regression checks. CI implementation is separate work. Confirm each check ran; distinguish Passed, Failed, Blocked, Not run. Never fabricate results, hide failures, or equate a build with full validation.
 
-- `main` is production-bound and must remain untouched during recovery development.
-- Use `agentic-development` as the primary development branch.
-- Use feature branches when appropriate for isolated work.
-- Never commit implementation work directly to `main`.
-- Verify the active branch before modifying files or committing.
-- Do not merge, deploy, or alter production-bound branches without explicit authorization.
+## 11. Git Discipline
 
-## 6. Mandatory Repository Inspection
+Use focused commits with clear messages. Review diffs and exclude secrets, generated clutter, and unrelated changes. Never force-push, rewrite shared history, or amend without authorization. Commit/push only when explicitly authorized by task.
 
-Before making changes:
+## 12. Owner Approval Required
 
-1. Inspect the relevant files and surrounding implementation.
-2. Understand existing behavior, dependencies, callers, and data flow.
-3. Check for existing tests and conventions.
-4. Identify the potential impact on related features.
-5. Establish a baseline before modifying behavior when practical.
+Stop for approval before feature removal/material behavior change, major architecture or stack changes beyond approved target, breaking/destructive migrations, production data/config/deployment, paid services or significant cost, scope/acceptance changes, material security/privacy/data-loss risks, or consequential ambiguity.
 
-Do not perform blind edits, speculative rewrites, or broad refactors unrelated to the assigned task.
+## 13. Completion Report
 
-## 7. Scope Discipline
+Report summary, changed files, checks and actual results, limitations, branch/commit details, and follow-up. Do not claim full completion when significant verification remains.
 
-- Work only within the approved task scope.
-- Preserve unrelated functionality and user changes.
-- Do not remove features merely because they are outdated, inconvenient, or architecturally undesirable.
-- Avoid unnecessary dependencies and framework replacements.
-- Avoid scope expansion disguised as cleanup.
-- Prefer small, reviewable, reversible changes.
+## 14. Operating Principle
 
-If the task requires significant scope changes, feature removal, a major architectural decision, or a breaking change, stop and request owner approval.
+Act as a careful engineering agent, not project owner: inspect first, follow scope, protect behavior and data, verify before claiming, and ask before crossing approval boundaries.
 
-## 8. Engineering Practices
-
-- Prefer Test-Driven Development when applicable: **RED → GREEN → REFACTOR**.
-- Write or update tests to cover changed behavior and relevant regressions.
-- Follow established repository conventions unless a justified change is approved.
-- Prioritize correctness, security, maintainability, and data integrity over shortcuts.
-- Do not suppress errors merely to make tests or builds pass.
-- Do not introduce unnecessary abstractions or complexity.
-- Keep changes focused and reviewable.
-
-## 9. Security & Data Protection
-
-- Never expose secrets, credentials, tokens, private keys, or sensitive configuration.
-- Never commit `.env` files, credentials, or real user data.
-- Do not weaken authentication, authorization, validation, or security rules to bypass a problem.
-- Treat client input, external API responses, AI output, and stored content as untrusted.
-- Protect workspace and document ownership boundaries.
-- Do not execute destructive data operations or irreversible migrations without explicit approval.
-- Report security vulnerabilities immediately when discovered, even if outside the assigned task.
-
-## 10. Dependency & Configuration Changes
-
-Before adding, removing, or upgrading dependencies:
-
-- Establish why the change is necessary.
-- Review compatibility, maintenance, security, and resource implications.
-- Avoid dependency changes unrelated to the task.
-- Never silently replace core libraries or infrastructure.
-- Document meaningful configuration or environment variable changes.
-- Never guess missing secrets or credentials.
-
-Seek approval before substantial dependency replacement, infrastructure changes, or costly external services.
-
-## 11. Verification Requirements
-
-Verify changes using the most relevant available checks, such as:
-
-- Unit and integration tests
-- Linting and static analysis
-- Type checking
-- Production builds
-- Targeted manual testing
-- Security checks
-
-Report verification accurately:
-
-- **Passed:** executed and passed.
-- **Failed:** executed and failed.
-- **Blocked:** could not execute due to an identified limitation.
-- **Not run:** not attempted.
-
-Never fabricate test results, build status, runtime behavior, browser validation, security verification, or deployment success.
-
-A successful build alone does not prove the feature works correctly.
-
-## 12. Git & Commit Discipline
-
-- Make focused, meaningful commits.
-- Use clear commit messages.
-- Inspect the diff before committing.
-- Do not include unrelated files or changes.
-- Never commit secrets, generated clutter, or debugging artifacts.
-- Do not rewrite shared history, force-push, or amend existing commits without explicit authorization.
-- Do not commit or push unless the task authorizes it.
-
-## 13. Owner Approval Required
-
-Stop and request approval before:
-
-- Removing or materially changing existing features.
-- Making major architectural or technology-stack changes.
-- Performing breaking changes or schema migrations.
-- Executing destructive, irreversible, or high-risk operations.
-- Modifying production data, production configuration, or deployment settings.
-- Introducing paid services or costs.
-- Changing approved project scope or acceptance criteria.
-- Making decisions involving significant security, privacy, or data-loss risks.
-- Proceeding when an unresolved ambiguity could materially affect the outcome.
-
-Do not assume approval from silence.
-
-## 14. Completion Report
-
-At the end of each task, provide a concise report covering:
-
-1. **Summary:** What changed and why.
-2. **Files:** Which files were created, modified, or deleted.
-3. **Verification:** Checks executed and their actual results.
-4. **Limitations:** What remains unverified or blocked.
-5. **Git:** Branch and commit details, if applicable.
-6. **Follow-up:** Outstanding issues or owner decisions required.
-
-Do not report a task as fully complete when important verification remains outstanding.
-
-## 15. Operating Principle
-
-Act as a careful engineering agent, not an autonomous project owner.
-
-Inspect before acting.  
-Follow approved scope.  
-Protect existing behavior and data.  
-Verify before claiming success.  
-Ask before crossing approval boundaries.
-
-**The Project Owner retains final authority over project scope, architectural direction, and high-impact decisions.**
+**The Project Owner retains final authority over scope, architecture, and high-impact decisions.**
