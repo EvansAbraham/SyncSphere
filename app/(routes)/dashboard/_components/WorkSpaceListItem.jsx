@@ -101,7 +101,7 @@ function WorkSpaceListItem({ workSpaceList }) {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <h2 className="text-lg mb-4">
-              Are you sure you want to delete the workspace "<strong>{selectedWorkspace?.workSpaceName}</strong>"?
+              Are you sure you want to delete the workspace &quot;<strong>{selectedWorkspace?.workSpaceName}</strong>&quot;?
             </h2>
             <div className="flex justify-end gap-4">
               <button 
