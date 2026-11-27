@@ -1,6 +1,7 @@
 # SyncSphere — Project Charter
 
-**Document Status:** Draft — Awaiting Review & Approval  
+**Document Status:** Approved  
+**Approved By:** Evans Abraham  
 **Version:** 0.2  
 **Project Status:** Recovery, Stabilization & Modernization  
 **Repository:** EvansAbraham/SyncSphere  
@@ -559,4 +560,4 @@ And progress backed by evidence.**
 
 ---
 
-*End of Project Charter — Version 0.2 — Draft for Review.*
+*End of Project Charter — Version 0.2 — Approved.*
