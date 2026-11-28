@@ -6,9 +6,11 @@ import React, { useState } from 'react';
 import { deleteDoc, doc, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/config/firebaseConfig';
 import { toast } from 'sonner';
+import { useFirebaseAuthBridge } from '@/app/providers/FirebaseAuthBridge';
 
 function WorkSpaceListItem({ workSpaceList }) {
   const router = useRouter();
+  const { status: bridgeStatus } = useFirebaseAuthBridge();
 
   // State to manage the dialog visibility and the workspace to be deleted
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -88,7 +90,7 @@ function WorkSpaceListItem({ workSpaceList }) {
             <div className='p-2 md:p-4 rounded-b-xl flex justify-between'>
               <h2 className='flex gap-2'>{item?.emoji} {item.workSpaceName}</h2>
               <Trash2Icon 
-                className='text-red-500 cursor-pointer' 
+                className={`text-red-500 ${bridgeStatus === 'authenticated' ? 'cursor-pointer' : 'cursor-not-allowed opacity-40'}` 
                 onClick={() => openDeleteDialog(item)} // Open delete confirmation dialog
               />
             </div>
@@ -105,7 +107,7 @@ function WorkSpaceListItem({ workSpaceList }) {
             </h2>
             <div className="flex justify-end gap-4">
               <button 
-                onClick={confirmDelete} 
+                disabled={bridgeStatus !== 'authenticated'}\n                onClick={confirmDelete} 
                 className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">
                 Delete
               </button>
