@@ -49,15 +49,20 @@ describe("executeDocumentSaveSession", () => {
 
   it("does not mark persisted when a Firestore write completes after invalidation", async () => {
     const write = deferred();
+    const writeStarted = deferred();
     let current = true;
     const onPersisted = vi.fn();
 
     const pending = executeDocumentSaveSession({
       isCurrent: () => current,
       prepare: async () => ({ snapshot: "prepared" }),
-      persist: () => write.promise,
+      persist: () => {
+        writeStarted.resolve();
+        return write.promise;
+      },
       onPersisted,
     });
+    await writeStarted.promise;
     current = false;
     write.resolve();
 
