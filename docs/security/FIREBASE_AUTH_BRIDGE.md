@@ -1,6 +1,6 @@
 # Firebase Auth Bridge Implementation Specification
 
-- **Status:** Approved architecture; implementation pending
+- **Status:** Stage C lifecycle implementation committed and CI-verified; Stage D integration/regression and Stage E acceptance pending
 - **Project:** SyncSphere
 - **Target branch:** `agentic-development`
 - **Related:** `docs/architecture/ADR-001-clerk-firebase-auth-bridge.md`
@@ -119,7 +119,7 @@ Review security behavior, failure modes, test coverage, and rollout readiness. N
 - [ ] UID is derived only from verified Clerk user ID.
 - [ ] Admin SDK is server-only.
 - [ ] Client Firebase Auth initialization reuses existing Firebase app.
-- [ ] Auth state synchronizes with Clerk including sign-out/account switch.
+- [x] Auth state synchronizes with Clerk including sign-out/account switch (Stage C; CI verified).\n- [ ] Firestore consumers gate reads/writes on bridge readiness and fail safely (Stage D).
 - [ ] Token response is not cached and token/secret logging is absent.
 - [ ] Caller-supplied identity cannot influence minted token.
 - [ ] Focused tests and Firebase Auth Emulator coverage exist where feasible.
