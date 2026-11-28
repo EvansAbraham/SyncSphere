@@ -9,7 +9,7 @@ import InlineCode from '@editorjs/inline-code';
 import Underline from '@editorjs/underline';
 import Hyperlink from 'editorjs-hyperlink';
 import Table from '@editorjs/table';
-import SimpleImage from 'simple-image-editor';
+import SimpleImage from 'simple-image-editorjs';
 import List from "@editorjs/list";
 import Checklist from '@editorjs/checklist';
 import CodeTool from '@editorjs/code';
