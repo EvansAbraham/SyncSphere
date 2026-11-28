@@ -42,7 +42,7 @@ describe("Firebase Admin initializer", () => {
     expect(cert).toHaveBeenCalledWith({
       projectId: validEnv.FIREBASE_ADMIN_PROJECT_ID,
       clientEmail: validEnv.FIREBASE_ADMIN_CLIENT_EMAIL,
-      privateKey: "-----BEGIN PRIVATE KEY-----\\nmock-key\\n-----END PRIVATE KEY-----",
+      privateKey: "-----BEGIN PRIVATE KEY-----\nmock-key\n-----END PRIVATE KEY-----",
     });
     expect(initializeApp).toHaveBeenCalledWith(
       {
