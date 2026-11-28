@@ -48,10 +48,13 @@ describe("document snapshot coordinator", () => {
     expect(decision.hasLocalChanges).toBe(false);
   });
 
-  it("ignores snapshots from the local writer while still resolving initialization", () => {
+  it("renders the first local snapshot but ignores subsequent local-write echoes", () => {
     const coordinator = createDocumentSnapshotCoordinator();
-    const decision = coordinator.receiveSnapshot({ isLocalWrite: true });
-    expect(decision.shouldRender).toBe(false);
+    const initial = coordinator.receiveSnapshot({ isLocalWrite: true });
+    const echo = coordinator.receiveSnapshot({ isLocalWrite: true });
+    expect(initial.shouldRender).toBe(true);
+    expect(echo.wasInitialized).toBe(true);
+    expect(echo.shouldRender).toBe(false);
     expect(coordinator.initialized).toBe(true);
   });
 
