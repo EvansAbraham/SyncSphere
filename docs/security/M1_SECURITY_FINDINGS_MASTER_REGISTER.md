@@ -86,7 +86,12 @@ Open · Investigating · In Progress · Blocked · Deferred · Fixed (unverified
 - **Resolution plan:** Review the remaining lifecycle/snapshot race scenarios; add targeted tests and fix within a bounded work package.
 - **Evidence:** Autosave fix residual-risk review; CI #123.
 - **Stage D source review (2026-11-28):** confirmed the initial Firestore snapshot may render after editor readiness and replace early unsaved edits while autosave is gated on `isFetchedRef`; subsequent remote snapshots may also render over local pending edits without a dirty-state guard. Existing cleanup disposes the queue/listener, but an already-started Firestore write cannot be cancelled. These are source-level risks; no production loss observed or code changed during this review.
-- **WP-03-D2 implementation (2026-11-28):** introduced `lib/document-save-session.js` to guard save lifecycle stages (entry, after EditorJS preparation, and after Firestore persistence), integrated it into `RichTextEditor.jsx`, and added four deterministic tests covering stale-at-entry, invalidation during preparation, invalidation during in-flight write (prevents stale persisted-revision bookkeeping), and current-session success. **CI verification pending.** Important residual: an already-issued Firestore write cannot be cancelled or rolled back; this guard prevents stale follow-up bookkeeping, not the write itself. Firestore Rules remain the authorization boundary.
+- **WP-03-D2 implementation (2026-11-28):** introduced `lib/document-save-session.js` to guard save lifecycle stages (entry, after EditorJS preparation, and after Firestore persistence), integrated it into `RichTextEditor.jsx`, and added four deterministic tests covering stale-at-entry, invalidation during preparation, invalidation during in-flight write (prevents stale persisted-revision bookkeeping), and current-session success. **CI verified:** run #148 on commit `24958287` succeeded; ESLint passed, all 9 test files / 40 tests passed, and production build completed. Job logs inspected: https://github.com/EvansAbraham/SyncSphere/actions/runs/46163454084. Important residual: an already-issued Firestore write cannot be cancelled or rolled back; this guard prevents stale follow-up bookkeeping, not the write itself. Firestore Rules remain the authorization boundary.
+### WP-03-D3 — Firestore consumer inventory (preliminary, 2026-11-28)
+- Started an inventory from the current `agentic-development` Git tree. Preliminary client-side Firestore consumer set: 8 files — workspace creation (`createworkspace/page.jsx`), dashboard list (`WorkSpaceList.jsx`), workspace cascade delete (`WorkSpaceListItem.jsx`), workspace detail route (`workspace/[workspaceid]/page.jsx`), document metadata (`DocumentInfo.jsx`), document deletion (`DocumentList.jsx`), editor snapshot/autosave (`RichTextEditor.jsx`), and workspace document navigation/create (`SideNav.jsx`).
+- Preliminary operation types observed: batched workspace/document/output creation; workspace query; cascade query and batched delete; workspace/document metadata reads and updates; document-output listener/update; workspace-document listener and batch create.
+- **Not yet exhaustive:** source lines and field-level authorization assumptions are still being reviewed; this is not a completed inventory or Rules readiness assessment. Next is the per-file authorization/data-flow matrix and validation against the full repository tree/search. No code, Rules, configuration, production data, or deployment changes in D3 so far.
+
 
 ### F-006 — Broader Firestore consumer inventory is incomplete
 - **Source:** Security audit
@@ -162,6 +167,7 @@ Open · Investigating · In Progress · Blocked · Deferred · Fixed (unverified
 |---|---|---|
 | CI #123 — https://github.com/EvansAbraham/SyncSphere/actions/runs/46159579020 | Passed | Autosave queue remediation verified in CI |
 | CI #128 — https://github.com/EvansAbraham/SyncSphere/actions/runs/46160412629 | Passed | 7 test files / 29 tests; ESLint and production build succeeded; warnings above remain non-blocking |
+| CI #148 — https://github.com/EvansAbraham/SyncSphere/actions/runs/46163454084 | Passed | D2 guard; 9 test files / 40 tests; ESLint and production build passed; job logs inspected |
 
 ## Recommended order of work
 
