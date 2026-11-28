@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { initializeApp, getFirestore } = vi.hoisted(() => ({
   initializeApp: vi.fn((config) => ({ config })),
-  getFirestore: vi.fn((app) => ({ app }),
+  getFirestore: vi.fn((app) => ({ app })),
 }));
 
 vi.mock("firebase/app", () => ({ initializeApp }));
