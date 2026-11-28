@@ -14,13 +14,14 @@
 - Use tests and CI for each implementation work package.
 - Track status as **Pending**, **In progress**, **Passed**, **Failed**, or **Blocked**; never mark unrun checks as passed.
 - Stop and request owner approval before production configuration/rules changes, migrations, destructive actions, or material security/data-loss risks.
+- For CI work, wait for the workflow to finish, inspect its logs, inspect downloaded artifacts when applicable, and only then report the result.
 
 ## Checklist
 
 ### WP-01 — Server-only boundary audit
 - [x] Source review of Firebase Admin isolation, client Firebase configuration, direct client-side Firestore access, Gemini client usage, and Clerk/Firebase identity bridge.
-- [ ] Verify production/client bundles and deployed/runtime behavior for secret leakage (attempted 2026-11-28; blocked—compiled bundle/runtime could not be accessed).
-- **Disposition:** Source audit completed. Admin SDK boundary appears isolated; direct client Firestore access and client Gemini credential exposure are confirmed concerns; Clerk-to-Firebase bridge is not implemented. Runtime/bundle scan remains blocked.
+- [ ] Verify production/client bundles and deployed/runtime behavior for secret leakage (CI build workflow created; run and artifact inspection remain unverified).
+- **Disposition:** Source audit completed. Firebase Admin module uses `server-only` and server credential variables; client Firebase configuration contains only web-client settings. Direct client Firestore access remains present. Gemini SDK is used in a client module with `NEXT_PUBLIC_GEMINI_API_KEY`, exposing the credential to browsers. Clerk-to-Firebase trusted token exchange was not found in the inspected source. Runtime/bundle scan is **Blocked** pending successful isolated workflow execution and artifact/log access; do not claim the bundles are clean.
 
 ### WP-02 — Firestore authorization & tenant-isolation design (pending WP-01 closure)
 - [ ] Map existing workspace/document relationships and ownership/org semantics.
@@ -96,14 +97,15 @@
 
 ## WP-01 audit summary (source-level; 2026-11-28)
 
-- **Firebase Admin module:** source-level isolation confirmed (`server-only`, server credential variables, lazy initialization, named-app reuse, project mismatch validation).
-- **Firebase client configuration:** client config only; no Admin private credentials identified in inspected source.
-- **Direct client Firestore access:** confirmed across workspace creation/list/deletion, document metadata/list/deletion, and editor persistence.
-- **Gemini credential boundary:** confirmed client-side SDK use with `NEXT_PUBLIC_GEMINI_API_KEY`; credential is not secret and must move server-side.
-- **Clerk/Firebase bridge:** trusted token exchange not implemented in inspected source.
-- **Client bundle/runtime scan:** attempted against the latest READY Vercel preview for branch `agentic-development` (commit `5b55eb7`); Vercel deployment file-tree API returned `404 file tree not found`, web access could not open the preview, and the execution environment could not resolve external DNS. Build logs confirm successful Next.js compilation and list chunk sizes, but do not provide compiled bundle contents; no runtime secret scan can be claimed.
-- **Production configuration or deployment changes:** none performed by this audit. The branch commit's Vercel preview deployment was observed as `READY` (auto-deployment from the connected Git branch), but no deployment was initiated by this scan.
+- **Firebase Admin module:** source-level boundary review verified `import "server-only"`, server-only Admin credential variables, lazy initialization, named-app reuse, and client/Admin project ID matching. This is a source finding only—not proof of bundle exclusion.
+- **Firebase client configuration:** client config reads `NEXT_PUBLIC_FIREBASE_*` values only and initializes Firebase Web SDK; no Admin private credentials are present in the inspected module.
+- **Direct client Firestore access:** confirmed in client components for workspace/document data operations. These calls rely on Firestore rules for authorization; client-side query filters are not an authorization control.
+- **Gemini credential boundary:** `config/GoogleAIModel.jsx` uses the browser-side SDK and `NEXT_PUBLIC_GEMINI_API_KEY`; any value configured under that variable is client-visible. The source demonstrates exposure without requiring the bundle scan.
+- **Clerk/Firebase bridge:** no trusted token exchange implementation identified in the inspected source. This remains a source-review finding and may need further targeted repository search before implementation.
+- **Runtime/bundle scan workflow:** separate workflow `.github/workflows/runtime-bundle-inspection.yml` created on `agentic-development`; manual trigger plus a push trigger limited to changes to that workflow file. It uses Node 24, `npm ci`, a placeholder-only build environment, and uploads `.next/static/` for three days. It does not deploy, pull Vercel environment values, or change the existing CI workflow.
+- **Workflow run/artifact evidence:** not retrieved or inspected. GitHub integration exposed file creation/read operations but no workflow-dispatch action; run retrieval attempts were rejected by the integration, and local clone/build attempt failed because the environment could not resolve `github.com`. Therefore workflow execution, build success, logs, and artifact contents remain **unverified**.
+- **Production configuration or deployment changes:** none performed as part of WP-01 review.
 
 ## Current next action
 
-Complete WP-01 runtime/bundle scan when access to deployed assets or a local build artifact is available. WP-02 remains paused until WP-01 is closed or its limitation is explicitly accepted.
+WP-01 source audit is completed, but runtime/bundle verification is blocked until the isolated workflow run and artifact are accessible. Do not proceed to WP-02 unless the project owner explicitly accepts this limitation.
