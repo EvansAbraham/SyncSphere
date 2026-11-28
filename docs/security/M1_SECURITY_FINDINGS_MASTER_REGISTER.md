@@ -76,6 +76,7 @@ Open · Investigating · In Progress · Blocked · Deferred · Fixed (unverified
 - **Status:** Open / under review
 - **Resolution plan:** Review the remaining lifecycle/snapshot race scenarios; add targeted tests and fix within a bounded work package.
 - **Evidence:** Autosave fix residual-risk review; CI #123.
+- **Stage D source review (2026-11-28):** confirmed the initial Firestore snapshot may render after editor readiness and replace early unsaved edits while autosave is gated on `isFetchedRef`; subsequent remote snapshots may also render over local pending edits without a dirty-state guard. Existing cleanup disposes the queue/listener, but an already-started Firestore write cannot be cancelled. These are source-level risks; no production loss observed or code changed during this review.
 
 ### F-006 — Broader Firestore consumer inventory is incomplete
 - **Source:** Security audit
