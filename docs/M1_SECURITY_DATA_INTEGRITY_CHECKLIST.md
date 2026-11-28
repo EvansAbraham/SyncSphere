@@ -146,3 +146,12 @@ WP-01 is complete. WP-02 authorization design is Owner-approved with remaining p
 - **Confirmed concern 2 — remote snapshot may replace dirty local state:** after initialization, a snapshot from another session/editor is rendered whenever its `editedBy` differs from the current user. No local-dirty/pending-save guard is visible in this component, so an external update can replace local edits that have not yet been persisted.
 - **Concern 3 — in-flight write boundary:** cleanup disposes the autosave queue and marks the effect inactive, but Firestore writes already started cannot be cancelled. The source review does not establish that a write already in flight is always harmless during auth loss or document/session transition.
 - **Disposition:** findings recorded under F-005. No code changes made during this review. Next bounded work package should design/test initial-load edit protection and snapshot-vs-dirty local sequencing before implementation.
+
+
+### WP-03-D1 — Editor Initial Load & Snapshot Integrity (implementation in progress)
+- [x] Added a snapshot coordination helper with local edit/persisted revision tracking and snapshot render decisions.
+- [x] Added unit regression coverage for initial snapshots, pre-snapshot local edits, dirty-state protection, clean remote snapshots, local snapshot echoes, and revision sequencing.
+- [x] Editor is hidden until its initial Firestore snapshot callback resolves; an initial snapshot authored by the current user is still allowed to render.
+- [x] Remote snapshots are prevented from rendering while local edits remain unpersisted; programmatic snapshot renders suppress autosave notifications and log render failures.
+- [ ] Local execution of lint/tests/build and CI verification remain outstanding. Current CI workflow is configured to trigger on pushes to agentic-development and its pull requests, but its checkout step explicitly checks out agentic-development rather than the PR head, so a PR would not validate this feature branch without workflow adjustment.
+- **Safety:** changes are isolated on `wp-03-d1-editor-snapshot-integrity`; no production deployment or data mutation.
