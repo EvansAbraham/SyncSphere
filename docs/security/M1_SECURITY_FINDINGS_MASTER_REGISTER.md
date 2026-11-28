@@ -1,3 +1,9 @@
+### WP-03-D1 editor snapshot integrity — implementation draft (2026-11-28)
+- Branch: `wp-03-d1-editor-snapshot-integrity` (isolated; not merged).
+- Added `lib/document-snapshot-coordinator.js` and unit tests for initial snapshot policy, local dirty-state protection, persistence revisions, and snapshot echo behavior.
+- Updated RichTextEditor to hide the editing surface until initial snapshot resolution; preserve local dirty content when remote snapshots arrive; suppress autosave events caused by programmatic renders; and track persisted local revisions.
+- **Validation is pending:** neither local test/build execution nor branch-specific CI has been performed. Existing CI workflow currently checks out the base `agentic-development` branch even on PR events, so a PR alone would not test the feature branch. No production deployment or data mutation.
+
 # M1 Security Findings & Technical Debt Master Register
 
 > Central tracking register for security findings, reliability risks, CI/build warnings, and deferred technical debt discovered during M1 security modernization. This register is a baseline, not an assertion that the repository audit is exhaustive.
