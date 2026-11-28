@@ -23,9 +23,15 @@ const missingConfig = Object.entries(requiredClientConfig)
   .filter(([, value]) => !value)
   .map(([key]) => envNames[key]);
 
+const requiredEnvNames = Object.values(envNames);
+const formattedEnvNames =
+  requiredEnvNames.length > 1
+    ? `${requiredEnvNames.slice(0, -1).join(", ")}, and ${requiredEnvNames.at(-1)}`
+    : requiredEnvNames[0];
+
 if (missingConfig.length) {
   throw new Error(
-    `Firebase Client configuration is incomplete. Set ${Object.keys(envNames).map((key) => envNames[key]).join(", ")}.`,
+    `Firebase Client configuration is incomplete. Set ${formattedEnvNames}.`,
   );
 }
 
