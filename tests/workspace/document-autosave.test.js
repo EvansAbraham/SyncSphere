@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, waitFor } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createAutosaveQueue } from "../../lib/document-autosave.js";
 
 function deferred() {
@@ -10,9 +10,13 @@ function deferred() {
 describe("createAutosaveQueue", () => {
   it("runs a follow-up save when edits arrive during an active save", async () => {
     const firstSave = deferred();
+    const secondSaveStarted = deferred();
     const save = vi.fn()
       .mockImplementationOnce(() => firstSave.promise)
-      .mockResolvedValueOnce(undefined);
+      .mockImplementationOnce(() => {
+        secondSaveStarted.resolve();
+        return Promise.resolve();
+      });
     const queue = createAutosaveQueue(save);
 
     queue.notify();
@@ -23,15 +27,20 @@ describe("createAutosaveQueue", () => {
     expect(save).toHaveBeenCalledTimes(1);
 
     firstSave.resolve();
-    await vi.waitFor(() => expect(save).toHaveBeenCalledTimes(2));
+    await secondSaveStarted.promise;
+    expect(save).toHaveBeenCalledTimes(2);
     queue.dispose();
   });
 
   it("coalesces multiple changes during a save into one follow-up save", async () => {
     const firstSave = deferred();
+    const secondSaveStarted = deferred();
     const save = vi.fn()
       .mockImplementationOnce(() => firstSave.promise)
-      .mockResolvedValue(undefined);
+      .mockImplementationOnce(() => {
+        secondSaveStarted.resolve();
+        return Promise.resolve();
+      });
     const queue = createAutosaveQueue(save);
 
     queue.notify();
@@ -39,8 +48,9 @@ describe("createAutosaveQueue", () => {
     queue.notify();
     queue.notify();
     firstSave.resolve();
+    await secondSaveStarted.promise;
 
-    await vi.waitFor(() => expect(save).toHaveBeenCalledTimes(2));
+    expect(save).toHaveBeenCalledTimes(2);
     queue.dispose();
   });
 
