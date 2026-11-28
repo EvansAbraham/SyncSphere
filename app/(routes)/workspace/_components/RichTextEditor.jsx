@@ -42,7 +42,7 @@ function RichTextEditor({ params }) {
     }
 
     const saveDocument = async () => {
-      if (!active || bridgeStatus !== 'authenticated' || !user || !editorRef.current || savingRef.current) return;
+      if (!active || bridgeStatus !== 'authenticated' || !user || !editorRef.current || !isFetchedRef.current || savingRef.current) return;
       savingRef.current = true;
       try {
         const outputData = await editorRef.current.save();
