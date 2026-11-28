@@ -38,7 +38,7 @@
 - [x] Stage C — client auth lifecycle: mounted `FirebaseAuthBridgeProvider` within `ClerkProvider`; exchange custom token via Firebase Client Auth; synchronize sign-in/sign-out/account changes; cancel stale token requests and serialize auth sync; clear prior Firebase UID before account switch; verify returned Firebase UID matches Clerk; expose loading/authenticated/signed-out/error states via `useFirebaseAuthBridge()`.
 - [x] Focused client lifecycle tests: sign-in/token exchange, sign-out cleanup, different-user cleanup, account switching, endpoint failure, and mismatched Firebase UID.
 - [x] CI run #95 completed successfully (2026-11-28): lint, tests, and production build all passed. Evidence: [run #95](https://github.com/EvansAbraham/SyncSphere/actions/runs/46156856828). Logs were inspected.
-- [ ] Stage D — in progress: readiness-gated workspace listing/detail reads, workspace creation/deletion, document list subscription/creation/deletion, metadata updates, and editor initialization/autosave. Regression coverage and CI verification remain to be completed.
+- [ ] Stage D — in progress: readiness-gated Firestore consumers and editor lifecycle review. Autosave queue/coalescing remediation is implemented and CI-verified (#123). WP-07A bounded-batch workspace cascade deletion is implemented and CI-verified (#128); checklist/register reconciliation completed. Remaining Stage D focus: editor initialization/snapshot sequencing, auth-loss during in-flight writes, editor/listener lifecycle cleanup, and broader Firestore consumer coverage. Regression coverage and CI verification remain outstanding for these residual areas.
 - [ ] Stage E — review lifecycle failure modes, retry/backoff policy, Firebase Auth Emulator coverage where feasible, and rollout readiness.
 - **Residual risk:** token endpoint lacks distributed rate limiting/robust abuse controls; proxy/origin behavior still needs deployment review. The provider is not a substitute for Firestore Rules. Stage D readiness gates are being integrated into existing consumers; not all remaining Firestore operations are covered or verified yet. No Rules/data migration, production environment changes, or deployment have been performed.
 - **Dependency:** WP-02 design.
@@ -65,10 +65,12 @@
 
 ### WP-07 — Data integrity & CRUD failure handling
 - [ ] Review workspace/document creation write sequences for partial completion.
-- [ ] Review document/workspace deletion and cascade behavior for orphan risks.
+- [x] Review document/workspace deletion and cascade behavior for orphan risks (initial review and bounded-batch remediation WP-07A completed; residual risks remain).
 - [ ] Review validation, workspace-document relationships, and stale/duplicate mutations.
-- [ ] Design recovery/compensation for partial failures before implementation.
-- [ ] Add failure-path tests; ensure existing user content is protected.
+- [x] Design and implement bounded-batch cascade handling for WP-07A; failure-path helper tests and CI verified.
+- [ ] Continue review of recovery/compensation and remaining failure paths; ensure existing user content is protected.
+- **WP-07A verified:** Sequential batches of up to 200 metadata IDs delete paired metadata/output records (up to 400 Firestore operations per batch); parent deletion waits for all child chunks to succeed. Tests cover chunking, sequencing, empty cases, and failure/retry behavior at helper level. CI #128 passed (7 test files / 29 tests; ESLint and production build succeeded): https://github.com/EvansAbraham/SyncSphere/actions/runs/46160412629
+- **Residual risks:** multi-batch cascade is not globally atomic; concurrent child creation may race deletion; orphan output records without metadata may not be discovered; no Firestore integration test or production data operation performed.
 
 ### WP-08 — Security regression coverage
 - [ ] Add/verify tests covering authentication, authorization, ownership/tenant isolation, forged IDs, invalid inputs, CRUD failures, and AI boundaries.
