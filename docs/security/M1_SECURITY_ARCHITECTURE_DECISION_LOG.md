@@ -196,3 +196,20 @@ For detailed status and evidence, use the M1 checklist and linked work-package d
 ## 11. Update history
 
 - **2026-11-28:** Initial log created with pre-M1 baseline, WP-01, WP-02, WP-03 identity/token endpoint decisions, WP-05 deferred direction, milestone comparison, and current risks.\n- **2026-11-28:** Added ADR-M1-006 for WP-03 Stage C client lifecycle, updated WP-03 status/evidence, and recorded interview narrative takeaways (functionality-first baseline → security audit → trusted identity bridge → remaining integration/enforcement work).
+
+
+## 2026-11-28 — Stage D autosave remediation evidence and WP-07 cascade finding
+
+### ADR-M1-007 — Queue editor autosaves to avoid dropped change notifications
+- **Status:** Implemented and CI-verified (scope-limited).
+- **Problem:** `RichTextEditor.jsx` previously skipped an onChange notification whenever `savingRef` was already true; rapid subsequent edits could be dropped if no later change triggered a save.
+- **Decision/change:** introduced `lib/document-autosave.js` to coalesce queued change notifications and run saves sequentially; integrated queue with the editor and dispose it on cleanup. The queue does not enqueue when its active-session predicate is false.
+- **Regression coverage:** `tests/workspace/document-autosave.test.js` covers edits during an active save, coalescing, disposal, and inactive-session behavior.
+- **Verification:** CI run #123 passed on commit `a66e9fb22662279f8077d97768bef36faa06bf2c`; link: https://github.com/EvansAbraham/SyncSphere/actions/runs/46159579020. Passing CI is scoped evidence; deployed runtime behavior and all editor race cases are not yet verified.
+- **Residual risks:** Firestore writes already initiated cannot be cancelled by effect cleanup. Snapshot/render timing and auth-loss/in-flight writes remain for Stage D review. Save errors are reported by the caller; queue remains available for later edit notifications.
+
+### WP-07 — Workspace cascade deletion partial-failure risk
+- **Status:** Confirmed from source; remediation pending.
+- **Finding:** `WorkSpaceListItem.jsx` deletes child metadata/content documents separately using `Promise.all`, then deletes the workspace parent. The sequence can partially succeed and leave orphaned/inconsistent records.
+- **Direction:** design bounded batches and a retry/recovery strategy; account for Firestore batch operation limits and the fact that multiple batches are not globally atomic. Add tests for empty workspaces, successful cascades, failures partway through, and retry/idempotency before implementation.
+- **No action taken:** no destructive operation, production mutation, environment change, or deployment was performed.
