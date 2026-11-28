@@ -1,11 +1,11 @@
 # Firestore Authorization & Tenant Isolation Design (WP-02)
 
-- Status: Draft for Project Owner review
+- Status: Project Owner-approved design draft (open policy decisions tracked)
 - Project: SyncSphere
 - Branch: agentic-development
 - Work package: M1 WP-02
 - Date: 2026-11-28
-- Scope: Design only; no code, rules, data, or production changes
+- Scope: Owner-approved design only; no code, rules, data, or production changes
 
 ## 1. Purpose
 Define a trustworthy authorization model for direct Firestore client access. Firebase Auth identifies the caller; resource checks establish access to each workspace and related documents.
@@ -185,7 +185,7 @@ Keep legacy fields until a compatibility/deprecation decision. No destructive ch
 - [ ] Rules test scenarios defined.
 - [ ] Query constraints understood.
 - [ ] Open decisions resolved or explicitly tracked.
-- [ ] Project Owner review/approval recorded.
+- [x] Project Owner review/approval recorded (2026-11-28). Open policy decisions remain tracked for resolution before WP-04 Rules implementation.
 
 ---
-End of WP-02 design draft.
+End of WP-02 owner-approved design draft. Approval does not authorize implementation of Firestore Rules, data migration, production configuration, or deployment.
