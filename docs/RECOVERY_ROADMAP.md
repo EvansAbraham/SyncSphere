@@ -2,11 +2,12 @@
 
 **Project:** SyncSphere  
 **Document Status:** Approved  
-**Version:** 0.3  
+**Version:** 0.4  
 **Document Type:** Recovery & Modernization Roadmap  
-**Approved By:** Evans Abraham (Project Owner)  
+**Approved By:** Evans Abraham
+**Approval Date:** 2026-11-28  
 **Target Branch:** `agentic-development`  
-**Parent Documents:** Project Charter v0.3; Product Requirements v0.2; Technical Plan v0.2
+**Parent Documents:** Project Charter v0.3; Product Requirements v0.2; Technical Plan v0.3; AI Modernization Roadmap v0.1
 
 ---
 
@@ -164,10 +165,15 @@ A milestone is complete when its work packages meet acceptance criteria, appropr
 
 Recovery completion requires verified auth/access boundaries; reliable workspace/document operations and persistence; stable editor and supported formatting; responsive usability; secure, validated, user-controlled AI generation using an appropriately supported and documented model; PDF export; automated verification and CI; current setup/architecture docs; known risks disclosed; and explicit Project Owner approval.
 
-## 12. Roadmap Maintenance
+## 12. AI Modernization Track
+
+AI capability evolution is governed by the separate [AI Modernization & Evolution Roadmap](AI_MODERNIZATION_ROADMAP.md) (approved v0.1). This track complements recovery rather than expanding the recovery milestones. It depends on applicable security, data-integrity, and platform gates; work may proceed in parallel only when dependencies and risks are satisfied and documented. Gemini model/integration modernization remains within M3 as scoped here, while broader AI foundation, retrieval, governance, and AI-assisted workflow work follows the separate roadmap.
+
+
+## 13. Roadmap Maintenance
 
 This roadmap may be adjusted based on baseline findings, feasibility, dependencies, and risk. Material changes to milestones, scope, or gates require owner approval.
 
 ---
 
-**End of Recovery Roadmap — Version 0.3 — Approved**
+**End of Recovery Roadmap — Version 0.4 — Approved by Evans Abraham — 2026-11-28
