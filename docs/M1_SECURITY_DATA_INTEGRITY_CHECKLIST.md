@@ -138,3 +138,11 @@ WP-01 is complete. WP-02 authorization design is Owner-approved with remaining p
 - **Confirmed source-level concern:** `app/(routes)/dashboard/_components/WorkSpaceListItem.jsx` queries child documents and issues individual deletions for `workspaceDocuments` and `documentOutput` records via `Promise.all`, then deletes the `Workspace` parent. This sequence is not atomic; a failure can leave partial cascade state/orphans.
 - **Disposition:** confirmed risk; no remediation performed yet. Do not claim the cascade is atomic. Design bounded batching/recovery and idempotent retry handling, respecting Firestore batch operation limits, before implementing. A cascade spanning multiple batches cannot be globally atomic.
 - **Next work package:** scoped WP-07 workspace deletion integrity design/implementation with failure-path tests. No production data changes or deployment.
+
+
+## Stage D follow-up — editor snapshot sequencing review (2026-11-28)
+
+- **Confirmed concern 1 — first snapshot can overwrite early edits:** the EditorJS instance is marked ready in `onReady` before the initial Firestore snapshot arrives. Change notifications are blocked from autosave while `isFetchedRef` is false, but the initial snapshot callback can still call `render(parsed)`. A user edit made in this window can therefore be unsaved and then replaced by the first snapshot.
+- **Confirmed concern 2 — remote snapshot may replace dirty local state:** after initialization, a snapshot from another session/editor is rendered whenever its `editedBy` differs from the current user. No local-dirty/pending-save guard is visible in this component, so an external update can replace local edits that have not yet been persisted.
+- **Concern 3 — in-flight write boundary:** cleanup disposes the autosave queue and marks the effect inactive, but Firestore writes already started cannot be cancelled. The source review does not establish that a write already in flight is always harmless during auth loss or document/session transition.
+- **Disposition:** findings recorded under F-005. No code changes made during this review. Next bounded work package should design/test initial-load edit protection and snapshot-vs-dirty local sequencing before implementation.
