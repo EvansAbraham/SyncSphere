@@ -19,12 +19,12 @@ import { db } from '@/config/firebaseConfig';
 import { useUser } from '@clerk/nextjs';
 import GenerateAITemplate from './GenerateAITemplate';
 import { useFirebaseAuthBridge } from '@/app/providers/FirebaseAuthBridge';
+import { createAutosaveQueue } from '@/lib/document-autosave';
 
 function RichTextEditor({ params }) {
   const editorRef = useRef(null);
   const unsubscribeRef = useRef(null);
   const isFetchedRef = useRef(false);
-  const savingRef = useRef(false);
   const { user } = useUser();
   const { status: bridgeStatus } = useFirebaseAuthBridge();
   const [documentOutput, setDocumentOutput] = useState(null);
@@ -41,21 +41,24 @@ function RichTextEditor({ params }) {
       return () => { active = false; };
     }
 
-    const saveDocument = async () => {
-      if (!active || bridgeStatus !== 'authenticated' || !user || !editorRef.current || !isFetchedRef.current || savingRef.current) return;
-      savingRef.current = true;
+    const autosaveQueue = createAutosaveQueue(async () => {
+      if (!active || bridgeStatus !== 'authenticated' || !user || !editorRef.current || !isFetchedRef.current) return;
       try {
-        const outputData = await editorRef.current.save();
-        if (!active || bridgeStatus !== 'authenticated') return;
+        const currentEditor = editorRef.current;
+        const outputData = await currentEditor.save();
+        if (!active || bridgeStatus !== 'authenticated' || editorRef.current !== currentEditor) return;
         await updateDoc(doc(db, 'documentOutput', params.documentid), {
           output: JSON.stringify(outputData),
           editedBy: user.primaryEmailAddress?.emailAddress,
         });
       } catch (error) {
         if (active) console.error('Unable to save document:', error);
-      } finally {
-        savingRef.current = false;
       }
+    }, () => active && bridgeStatus === 'authenticated' && Boolean(user));
+
+    const saveDocument = () => {
+      if (!active || bridgeStatus !== 'authenticated' || !user || !editorRef.current || !isFetchedRef.current) return;
+      autosaveQueue.notify();
     };
 
     const listenForDocumentOutput = () => {
@@ -119,6 +122,7 @@ function RichTextEditor({ params }) {
 
     return () => {
       active = false;
+      autosaveQueue.dispose();
       unsubscribeRef.current?.();
       unsubscribeRef.current = null;
       editorRef.current = null;
