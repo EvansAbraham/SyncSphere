@@ -2,6 +2,7 @@ import { Lato } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "sonner";
+import { FirebaseAuthBridgeProvider } from "@/app/providers/FirebaseAuthBridge";
 
 const lato = Lato({ weight: ['100', '300', '400', '700', '900'], subsets: ["latin"] });
 
@@ -15,11 +16,12 @@ export default function RootLayout({ children }) {
     <ClerkProvider>
       <html lang="en">
         <body className={lato.className}>
-        <Toaster />
-          {children}
+          <FirebaseAuthBridgeProvider>
+            <Toaster />
+            {children}
+          </FirebaseAuthBridgeProvider>
         </body>
       </html>
     </ClerkProvider>
-    
   );
 }
