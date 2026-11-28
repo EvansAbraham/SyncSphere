@@ -1,10 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 
-const clerkAuth = vi.fn();
-const firebaseSignIn = vi.fn();
-const firebaseSignOut = vi.fn();
-const firebaseAuth = { currentUser: null };
+const { clerkAuth, firebaseSignIn, firebaseSignOut, firebaseAuth } = vi.hoisted(() => ({
+  clerkAuth: vi.fn(),
+  firebaseSignIn: vi.fn(),
+  firebaseSignOut: vi.fn(),
+  firebaseAuth: { currentUser: null },
+}));
 
 vi.mock("@clerk/nextjs", () => ({ useAuth: clerkAuth }));
 vi.mock("firebase/auth", () => ({
