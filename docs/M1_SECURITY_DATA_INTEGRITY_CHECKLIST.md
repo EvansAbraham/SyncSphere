@@ -38,7 +38,10 @@
 - [x] Stage C — client auth lifecycle: mounted `FirebaseAuthBridgeProvider` within `ClerkProvider`; exchange custom token via Firebase Client Auth; synchronize sign-in/sign-out/account changes; cancel stale token requests and serialize auth sync; clear prior Firebase UID before account switch; verify returned Firebase UID matches Clerk; expose loading/authenticated/signed-out/error states via `useFirebaseAuthBridge()`.
 - [x] Focused client lifecycle tests: sign-in/token exchange, sign-out cleanup, different-user cleanup, account switching, endpoint failure, and mismatched Firebase UID.
 - [x] CI run #95 completed successfully (2026-11-28): lint, tests, and production build all passed. Evidence: [run #95](https://github.com/EvansAbraham/SyncSphere/actions/runs/46156856828). Logs were inspected.
-- [ ] Stage D — in progress: readiness-gated Firestore consumers and editor lifecycle review. Autosave queue/coalescing remediation is implemented and CI-verified (#123). WP-07A bounded-batch workspace cascade deletion is implemented and CI-verified (#128); checklist/register reconciliation completed. Remaining Stage D focus: editor initialization/snapshot sequencing, auth-loss during in-flight writes, editor/listener lifecycle cleanup, and broader Firestore consumer coverage. Regression coverage and CI verification remain outstanding for these residual areas.
+- [x] Stage D1 — editor initial-load/snapshot integrity coordinator implemented, integrated, merged, and CI-verified (#138).
+- [x] Stage D2 — auth-loss/in-flight save-session guard implemented and CI-verified (#148; 40 tests passed overall).
+- [ ] Stage D3 — systematic Firestore consumer inventory and authorization mapping (in progress; preliminary eight client consumer files identified; full per-file review and data-path mapping pending).
+- [ ] Stage D4 — remaining lifecycle/readiness gaps and Firebase Auth Emulator coverage review (scope to be determined from D3 findings). Autosave queue/coalescing remediation is implemented and CI-verified (#123). WP-07A bounded-batch workspace cascade deletion is implemented and CI-verified (#128); checklist/register reconciliation completed. Remaining Stage D focus: editor initialization/snapshot sequencing, auth-loss during in-flight writes, editor/listener lifecycle cleanup, and broader Firestore consumer coverage. Regression coverage and CI verification remain outstanding for these residual areas.
 - [ ] Stage E — review lifecycle failure modes, retry/backoff policy, Firebase Auth Emulator coverage where feasible, and rollout readiness.
 - **Residual risk:** token endpoint lacks distributed rate limiting/robust abuse controls; proxy/origin behavior still needs deployment review. The provider is not a substitute for Firestore Rules. Stage D readiness gates are being integrated into existing consumers; not all remaining Firestore operations are covered or verified yet. No Rules/data migration, production environment changes, or deployment have been performed.
 - **Dependency:** WP-02 design.
@@ -117,6 +120,22 @@
 WP-01 is complete. WP-02 authorization design is Owner-approved with remaining policy decisions tracked. WP-03 Stage B token endpoint and Stage C client lifecycle are implemented and CI-verified; Stage D consumer readiness gating and data-integrity improvements are underway. CI must be verified before considering the current changes stable. Gemini key protection remains tracked in WP-05.
 
 ### WP-03-D2 — Editor Auth-Loss & In-Flight Write Safety
+- [x] Save-session guard added in `lib/document-save-session.js`.
+- [x] RichTextEditor integration captures session/editor/document context and guards save entry, pre-write, and post-write bookkeeping.
+- [x] Four targeted deferred-promise regression tests added for stale entry, invalidation during preparation, invalidation during in-flight write, and current-session success.
+- [x] CI run #148 passed on commit `24958287`; ESLint passed, all 9 test files / 40 tests passed, production build completed. Job logs inspected: https://github.com/EvansAbraham/SyncSphere/actions/runs/46163454084
+- **Residual limitation:** an already-started Firestore request cannot be cancelled or rolled back by this client guard; Rules remain the authorization boundary.
+- **No deployment, Rules, environment, or production data changes.**
+
+### WP-03-D3 — Firestore Consumer Inventory & Authorization Mapping (next; preliminary inventory underway)
+- [ ] Review each identified client consumer's full read/write/query/listener behavior, not just imports.
+- [ ] Map affected collections, document IDs, workspace/document relationship fields, owner/org filters, and mutation boundaries.
+- [ ] Classify each operation against the WP-02 authorization design and flag client-controlled ownership/tenant assumptions.
+- [ ] Validate inventory completeness against the current `agentic-development` repository tree/search before concluding.
+- [ ] Record findings and next bounded remediation(s) in the master register; no code/rules changes during inventory-only work.
+- **Preliminary files identified:** createworkspace page, dashboard WorkspaceList/WorkspaceListItem, workspace route, DocumentInfo, DocumentList, RichTextEditor, SideNav (8 files; inventory not yet complete).
+- **Next:** continue D3 file-by-file review and produce the authorization matrix before choosing the next implementation fix.
+
 - **Status:** Implementation completed; CI verification pending.
 - **Scope:** `RichTextEditor.jsx` autosave integration plus new `lib/document-save-session.js` helper and focused unit tests.
 - **Policy:** Save is guarded before preparation, after EditorJS preparation, and after the Firestore write. A stale context will not start a write if invalidated before the write boundary, and will not mark the captured revision persisted if invalidated while the write is in flight. No automatic retry is introduced across account/document/editor contexts.
