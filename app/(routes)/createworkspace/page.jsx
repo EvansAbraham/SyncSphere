@@ -10,6 +10,8 @@ import EmojiPickerComponent from '@/app/_components/EmojiPickerComponent';
 import { doc, setDoc } from 'firebase/firestore';
 import { useAuth, useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { useFirebaseAuthBridge } from '@/app/providers/FirebaseAuthBridge';
 import uuid4 from 'uuid4';
 
 function CreateWorkSpace() {
@@ -17,13 +19,14 @@ function CreateWorkSpace() {
   const [workSpaceName, setWorkSpaceName] = useState();
   const [emoji, setEmoji] = useState();
   const {user} = useUser();
+  const { status: bridgeStatus, error: bridgeError } = useFirebaseAuthBridge();
   const {orgId} = useAuth();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const OnCreateWorkspace = async() => {
     setLoading(true);
     const workspaceId = Date.now();
-    const result = await setDoc(doc(db, 'Workspace', workspaceId.toString()),{
+    try {\n    await setDoc(doc(db, 'Workspace', workspaceId.toString()),{
       workSpaceName: workSpaceName,
       emoji:emoji,
       coverImage: coverImage,
@@ -88,7 +91,7 @@ function CreateWorkSpace() {
             />
           </div>
           <div className="mt-7 flex justify-end gap-6">
-            <Button disabled={!workSpaceName?.length||loading}
+            <Button disabled={!workSpaceName?.length||loading||bridgeStatus !== 'authenticated'}
             onClick={OnCreateWorkspace}>Create {loading&&<Loader2Icon className="animate-spin ml-2"/>}</Button>
             <Button variant="outline">Cancel</Button>
           </div>
