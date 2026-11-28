@@ -148,10 +148,12 @@ WP-01 is complete. WP-02 authorization design is Owner-approved with remaining p
 - **Disposition:** findings recorded under F-005. No code changes made during this review. Next bounded work package should design/test initial-load edit protection and snapshot-vs-dirty local sequencing before implementation.
 
 
-### WP-03-D1 — Editor Initial Load & Snapshot Integrity (implementation in progress)
-- [x] Added a snapshot coordination helper with local edit/persisted revision tracking and snapshot render decisions.
-- [x] Added unit regression coverage for initial snapshots, pre-snapshot local edits, dirty-state protection, clean remote snapshots, local snapshot echoes, and revision sequencing.
-- [x] Editor is hidden until its initial Firestore snapshot callback resolves; an initial snapshot authored by the current user is still allowed to render.
-- [x] Remote snapshots are prevented from rendering while local edits remain unpersisted; programmatic snapshot renders suppress autosave notifications and log render failures.
-- [ ] Local execution of lint/tests/build and CI verification remain outstanding. Current CI workflow is configured to trigger on pushes to agentic-development and its pull requests, but its checkout step explicitly checks out agentic-development rather than the PR head, so a PR would not validate this feature branch without workflow adjustment.
-- **Safety:** changes are isolated on `wp-03-d1-editor-snapshot-integrity`; no production deployment or data mutation.
+### WP-03-D1 — Editor Initial Load & Snapshot Integrity
+- [x] Snapshot coordinator added with local edit/persisted revision tracking.
+- [x] Regression tests added for initial snapshots, pre-snapshot edits, dirty-state protection, clean remote snapshots, local echoes, and revision sequencing.
+- [x] Editor is hidden until the initial Firestore snapshot callback resolves; first snapshot authored by current user may render.
+- [x] Remote snapshots are blocked from rendering while local edits remain unpersisted; snapshot render autosave suppression and render-error logging added.
+- [x] CI checkout fixed to check out the triggering commit rather than hardcoding `agentic-development`.
+- [x] Merged into `agentic-development` (merge commit `66314c04562a39e1b332763c266e8d8e6e70fcf6`).
+- [ ] **CI validation blocked/pending:** run #135 (ID `46162201522`) failed in the new coordinator test. The coordinator behaved as written; the test incorrectly expected the *first* local-authored snapshot to be ignored, conflicting with the existing requirement that the initial snapshot render. Corrected the test on `agentic-development` in commit `3da302a12e74c5e59cf4207b6e1815a8fa264913`: it now asserts first local snapshot renders and a subsequent local echo is ignored. This correction has not yet been run through CI; the available GitHub connector cannot dispatch a workflow run, and API-based commits do not appear to trigger a new run in the current run list.
+- **No production deployment or data mutation.**
