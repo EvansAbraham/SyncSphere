@@ -50,9 +50,11 @@ jobs:
         run: npm run test:run
 
       - name: Install Vercel CLI
+        if: github.event_name != 'pull_request'
         run: npm install --global vercel@latest
 
       - name: Link Vercel project for CI
+        if: github.event_name != 'pull_request'
         run: |
           mkdir -p .vercel
           printf '{"projectId":"%s","orgId":"%s"}\n' "$VERCEL_PROJECT_ID" "$VERCEL_ORG_ID" > .vercel/project.json
@@ -61,11 +63,13 @@ jobs:
           VERCEL_ORG_ID: team_LXWZxdQW4eoyzPERJ7O42iKN
 
       - name: Pull production build environment from Vercel
+        if: github.event_name != 'pull_request'
         run: vercel env pull .env.production.local --yes --environment=production --token="$VERCEL_TOKEN"
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
       - name: Build production application
+        if: github.event_name != 'pull_request'
         run: |
           cleanup() { rm -f .env.production.local; }
           trap cleanup EXIT
