@@ -120,3 +120,19 @@ WP-01 is complete. WP-02 authorization design is Owner-approved with remaining p
 - **WP-01-B — Gemini exposure risk handoff:** `config/GoogleAIModel.jsx` reads `NEXT_PUBLIC_GEMINI_API_KEY` in a client-side Gemini SDK module. `.env.sample` names `NEXT_GEMINI_API_KEY` instead, creating a config-name mismatch. Vercel environment metadata (without decrypting values) shows `NEXT_PUBLIC_GEMINI_API_KEY` targets Development, Preview, and Production. This exposure is assigned to WP-05 for server-side migration, tests, and credential protection.
 - **Temporary rename caution:** Renaming only the Vercel variable to `NEXT_GEMINI_API_KEY` will not secure the existing client module while it still reads the public variable. Removing the public variable before migrating the Gemini call server-side would likely break the AI feature; leaving the old public variable in place keeps browser exposure. Therefore no variable rename/removal was made. A safe remediation needs the WP-05 server migration (or explicit owner approval to disable the feature temporarily) and appropriate credential rotation/restriction.
 - **Scope/evidence:** No Vercel production environment values were changed, decrypted, rotated, or deployed in this follow-up.
+
+
+## Stage D progress update — autosave race remediation and CI evidence (2026-11-28)
+
+- **Autosave race identified:** the previous `savingRef` lock returned early on editor change notifications during an active save. Such changes could be dropped if no subsequent change triggered another save.
+- **Remediation implemented:** introduced `lib/document-autosave.js` queued/coalescing save helper; integrated into `RichTextEditor.jsx`. Pending change notifications trigger a sequential follow-up save; queue is disposed during editor cleanup; inactive sessions do not enqueue saves.
+- **Regression tests added:** `tests/workspace/document-autosave.test.js` covers follow-up save after edits during an active save, coalescing, disposal, and inactive sessions.
+- **Verification:** CI run #123 passed on commit `a66e9fb22662279f8077d97768bef36faa06bf2c`. The run completed lockfile synchronization, dependency installation, ESLint, tests, Vercel CI linking/environment pull for build, and production build successfully. Evidence: https://github.com/EvansAbraham/SyncSphere/actions/runs/46159579020
+- **Status:** autosave race fix implemented and CI-verified for the covered helper/component changes. Stage D remains open; this does not establish all editor lifecycle/snapshot races are resolved or prove deployed behavior.
+- **Next Stage D review:** editor initialization and snapshot overwrite sequencing, auth-loss/in-flight write behavior, then remaining Firestore consumer audit.
+
+## WP-07 finding — workspace cascade deletion integrity (2026-11-28)
+
+- **Confirmed source-level concern:** `app/(routes)/dashboard/_components/WorkSpaceListItem.jsx` queries child documents and issues individual deletions for `workspaceDocuments` and `documentOutput` records via `Promise.all`, then deletes the `Workspace` parent. This sequence is not atomic; a failure can leave partial cascade state/orphans.
+- **Disposition:** confirmed risk; no remediation performed yet. Do not claim the cascade is atomic. Design bounded batching/recovery and idempotent retry handling, respecting Firestore batch operation limits, before implementing. A cascade spanning multiple batches cannot be globally atomic.
+- **Next work package:** scoped WP-07 workspace deletion integrity design/implementation with failure-path tests. No production data changes or deployment.
