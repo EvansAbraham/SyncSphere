@@ -140,6 +140,11 @@ Open · Investigating · In Progress · Blocked · Deferred · Fixed (unverified
 - **Resolution plan:** Review action versions and upgrade compatible actions in a dedicated workflow-maintenance pass.
 - **Evidence:** CI #128 job log reported the Node 20 action-runtime deprecation notice while the job itself ran under Node 24 for project setup/build.
 
+### WP-07A checklist reconciliation (2026-11-28)
+- Temporary M1 checklist updated to reflect WP-07A bounded-batch cascade remediation and CI evidence #128; residual risks remain explicitly open.
+- Stage D progress notes reconciled: autosave remediation (#123) and WP-07A (#128) are verified, but editor snapshot sequencing, auth-loss/in-flight write behavior, lifecycle/listener cleanup, and broader Firestore consumer coverage remain outstanding.
+- Documentation update is bookkeeping only; no code, Rules, environment, data, or deployment changes.
+
 ## Evidence baseline
 
 | Evidence | Result | Notes |
