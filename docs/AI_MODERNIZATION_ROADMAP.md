@@ -7,7 +7,7 @@
 **Approved By:** Evans Abraham  
 **Approval Date:** 2026-11-28  
 **Target Branch:** `agentic-development`  
-**Related Documents:** Recovery Roadmap v0.3; Technical Plan v0.3; Risk Register v0.4
+**Related Documents:** Recovery Roadmap v0.4; Technical Plan v0.4; Risk Register v0.5
 
 ---
 
