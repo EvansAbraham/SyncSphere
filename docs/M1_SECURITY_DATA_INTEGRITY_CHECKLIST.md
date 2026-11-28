@@ -38,9 +38,9 @@
 - [x] Stage C — client auth lifecycle: mounted `FirebaseAuthBridgeProvider` within `ClerkProvider`; exchange custom token via Firebase Client Auth; synchronize sign-in/sign-out/account changes; cancel stale token requests and serialize auth sync; clear prior Firebase UID before account switch; verify returned Firebase UID matches Clerk; expose loading/authenticated/signed-out/error states via `useFirebaseAuthBridge()`.
 - [x] Focused client lifecycle tests: sign-in/token exchange, sign-out cleanup, different-user cleanup, account switching, endpoint failure, and mismatched Firebase UID.
 - [x] CI run #95 completed successfully (2026-11-28): lint, tests, and production build all passed. Evidence: [run #95](https://github.com/EvansAbraham/SyncSphere/actions/runs/46156856828). Logs were inspected.
-- [ ] Stage D — integrate readiness gating into existing Firestore workspace/document reads and mutations; add regression coverage for existing workflows and races.
+- [ ] Stage D — in progress: readiness-gated workspace listing/detail reads, workspace creation/deletion, document list subscription/creation/deletion, metadata updates, and editor initialization/autosave. Regression coverage and CI verification remain to be completed.
 - [ ] Stage E — review lifecycle failure modes, retry/backoff policy, Firebase Auth Emulator coverage where feasible, and rollout readiness.
-- **Residual risk:** token endpoint lacks distributed rate limiting/robust abuse controls; proxy/origin behavior still needs deployment review. The provider is not a substitute for Firestore Rules. Firestore consumers have not yet been gated by readiness. No Rules/data migration, production environment changes, or deployment have been performed.
+- **Residual risk:** token endpoint lacks distributed rate limiting/robust abuse controls; proxy/origin behavior still needs deployment review. The provider is not a substitute for Firestore Rules. Stage D readiness gates are being integrated into existing consumers; not all remaining Firestore operations are covered or verified yet. No Rules/data migration, production environment changes, or deployment have been performed.
 - **Dependency:** WP-02 design.
 
 ### WP-04 — Firestore rules implementation & validation
@@ -112,7 +112,7 @@
 
 ## Current next action
 
-WP-01 is complete. WP-02 authorization design is Owner-approved with remaining policy decisions tracked. WP-03 Stage B token endpoint and Stage C client lifecycle are implemented and CI-verified; next is Stage D integration of bridge readiness into Firestore workspace/document consumers and regression testing. Gemini key protection remains tracked in WP-05.
+WP-01 is complete. WP-02 authorization design is Owner-approved with remaining policy decisions tracked. WP-03 Stage B token endpoint and Stage C client lifecycle are implemented and CI-verified; Stage D consumer readiness gating and data-integrity improvements are underway. CI must be verified before considering the current changes stable. Gemini key protection remains tracked in WP-05.
 
 ### WP-01 follow-up — identity bridge investigation and Gemini risk handoff (2026-11-28)
 
