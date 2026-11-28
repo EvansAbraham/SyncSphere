@@ -2,11 +2,11 @@
 
 **Project:** SyncSphere  
 **Document Status:** Approved  
-**Version:** 0.2  
+**Version:** 0.3  
 **Document Type:** Technical Architecture & Implementation Plan  
 **Approved By:** Evans Abraham (Project Owner)  
 **Target Branch:** `agentic-development`  
-**Parent Documents:** Project Charter v0.3 · Product Requirements v0.2 · Recovery Roadmap v0.2
+**Parent Documents:** Project Charter v0.3 · Product Requirements v0.2 · Recovery Roadmap v0.3
 
 ---
 
@@ -28,7 +28,7 @@ Current versions below reflect repository inspection and must be re-confirmed du
 | Auth | Clerk | Clerk; compatibility update as needed |
 | Data | Firebase / Firestore | Firebase / Firestore |
 | Editor | Editor.js | Retain pending compatibility/maintenance assessment |
-| AI | Gemini SDK | Gemini, server-side only |
+| AI | Gemini SDK | Gemini, server-side only; model lifecycle/support to be evaluated |
 | Styling | Tailwind CSS 3, Radix UI | Supported compatible versions, evaluated |
 | Hosting | Vercel | Vercel, preview and deployment settings reviewed |
 | Tests/lint | Not established | Appropriate tools, required checks |
@@ -122,13 +122,15 @@ Client responsibilities: presentation, navigation, transient UI state, editor in
 
 Gemini calls must be server-side. API keys remain server-only, never `NEXT_PUBLIC_*`, committed, returned to clients, or embedded in bundles.
 
+Model lifecycle is part of AI integration maintenance: before changing the configured model, identify its exact model ID and SDK usage; check official Google documentation for availability, support/deprecation notices, capabilities, and migration guidance; compare candidate replacements against SyncSphere's needs for output quality, structured-response support, latency, cost, and reliability. Prefer a supported, stable fit over simply selecting the newest model. Record the selected model and rationale in configuration/technical documentation, and keep the model configurable where practical so future migrations do not require broad code changes. Revisit model selection when provider lifecycle notices, compatibility changes, or observed generation quality warrant it.
+
 AI request flow:
 1. Receive user request.
 2. Authenticate user.
 3. Authorize any workspace/document context.
 4. Validate and bound input.
 5. Apply appropriate abuse/usage controls.
-6. Call provider.
+6. Call provider using the documented, configured supported model.
 7. Validate response shape/content.
 8. Return safe output for user review.
 
@@ -199,7 +201,7 @@ Maintain consistent environment configuration for local, tests, CI, and deployme
 
 ## 16. Dependencies
 
-npm is canonical; `package-lock.json` is reproducibility source; use `npm ci`. Evaluate maintenance, compatibility, security, license, resource/bundle cost before adding/upgrading. Avoid unrelated package churn or mass upgrades. Core framework/auth dependency changes require documented rationale and review.
+npm is canonical; `package-lock.json` is reproducibility source; use `npm ci`. Evaluate maintenance, compatibility, security, license, bundle/resource cost before adding/upgrading. Avoid unrelated package churn or mass upgrades. Core framework/auth dependency changes require documented rationale and review.
 
 ## 17. Observability and Error Handling
 
@@ -214,7 +216,8 @@ Provide safe user errors, useful server diagnostics, distinguishable operational
 | Auth | Clerk retained; audit |
 | Data | Firestore retained; audit rules and model |
 | Editor | Editor.js retained pending evaluation |
-| AI | Gemini, server-side only |
+| AI provider | Gemini; server-side only |
+| Gemini model | Exact current model, support/deprecation status, and replacement candidate to be investigated during M3 AI stabilization; no model selected yet |
 | PDF library | Undecided; evaluate before adoption |
 | Test tooling | Undecided until baseline inspection |
 | Autosave/concurrency | Design and test during stability milestone |
@@ -228,13 +231,13 @@ Provide safe user errors, useful server diagnostics, distinguishable operational
 - No production data experiments or destructive migration without approval.
 - No client exposure or source-control secrets.
 - No production deployment without explicit approval.
-- No unverified claims about tests, security, build, or runtime.
+- No unverified claims about tests, security, build, runtime.
 - No unnecessary services/dependencies or scope expansion.
 - Preserve existing documents/data and user workflows.
 
 ## 20. Technical Completion Criteria
 
-Recovery is complete when architecture/boundaries are implemented and verified; auth/access and Firestore rules are tested; core CRUD and persistence are reliable; editor lifecycle/content compatibility is sound; AI is secured and validated; responsive usability and PDF export meet acceptance criteria; test/lint/build/CI are functioning; setup docs and risks are current; and Project Owner approves.
+Recovery is complete when architecture/boundaries are implemented and verified; auth/access and Firestore rules are tested; core CRUD and persistence are reliable; editor lifecycle/content compatibility is sound; AI is secured, validated, and uses a documented supported model with tested failure handling; responsive usability and PDF export meet acceptance criteria; test/lint/build/CI are functioning; setup docs and risks are current; and Project Owner approves.
 
 ## 21. Plan Maintenance
 
@@ -242,4 +245,4 @@ Refine the plan based on evidence. Routine implementation choices within scope m
 
 ---
 
-**End of Technical Plan — Version 0.2 — Approved**
+**End of Technical Plan — Version 0.3 — Approved**
