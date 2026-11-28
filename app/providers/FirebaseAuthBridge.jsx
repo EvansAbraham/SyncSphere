@@ -1,9 +1,9 @@
 "use client";
 
 import { useAuth } from "@clerk/nextjs";
-import { onAuthStateChanged, signInWithCustomToken, signOut } from "firebase/auth";
+import { signInWithCustomToken, signOut } from "firebase/auth";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { auth } from "@/config/firebaseAuth";
+import { auth } from "../../config/firebaseAuth";
 
 const FirebaseAuthBridgeContext = createContext({
   status: "loading",
@@ -43,7 +43,7 @@ export function FirebaseAuthBridgeProvider({ children }) {
     const isCurrent = () => !cancelled && generationRef.current === generation;
 
     setState({
-      status: userId ? "loading" : "signed-out",
+      status: "loading",
       firebaseUid: null,
       error: null,
     });
