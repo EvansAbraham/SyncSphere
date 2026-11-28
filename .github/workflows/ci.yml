@@ -49,8 +49,21 @@ jobs:
       - name: Run tests
         run: npm run test:run
 
-      - name: Build production application
-        run: npm run build
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Link Vercel project for CI
+        run: |
+          mkdir -p .vercel
+          printf '{"projectId":"%s","orgId":"%s"}\n' "$VERCEL_PROJECT_ID" "$VERCEL_ORG_ID" > .vercel/project.json
+        env:
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+
+      - name: Build production application with Vercel environment
+        run: vercel env run -e production --token="$VERCEL_TOKEN" -- npm run build
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
       - name: Commit lockfile if changed
         if: github.event_name != 'pull_request'
