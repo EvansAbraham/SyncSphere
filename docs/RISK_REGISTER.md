@@ -1,10 +1,12 @@
 # SyncSphere — Risk Register
 
 **Document:** `docs/RISK_REGISTER.md`  
-**Version:** 0.4  
+**Version:** 0.5  
 **Status:** Approved  
 **Assessment:** M0  
 **Branch:** `agentic-development`
+**Approved By:** Evans Abraham
+**Approval Date:** 2026-11-28
 
 > Earlier draft discussions did not contain assigned numeric IDs. IDs below are newly established in this version, not a claim of continuity. Risk IDs are stable from v0.3 onward unless formally changed.
 
@@ -44,7 +46,7 @@ Qualitative ratings: **Critical**, **High**, **Medium**, **Low**. Confidence des
 ## 3. Priority Summary
 
 - **P0:** SS-R01–SS-R04 — Firestore exposure, authorization/tenant boundaries, trusted ownership, Gemini credential protection.
-- **P1:** SS-R05–SS-R12, SS-R18–SS-R19, SS-R21, SS-R24 — App Check, AI availability/validation/model lifecycle, data consistency, editor reliability, diagnostics, tests, audit, configuration.
+- **P1:** SS-R05–SS-R12, SS-R18–SS-R19, SS-R21, SS-R24–SS-R28 — App Check, AI availability/validation/model lifecycle, data consistency, editor reliability, diagnostics, tests, audit, configuration, retrieval isolation, prompt injection, usage governance, and AI evaluation.
 - **P2:** SS-R13–SS-R17, SS-R20, SS-R22–SS-R23 — UI synchronization, view toggle, mobile layout, performance, accessibility, CI verification, landing content.
 - **P3 / deferred:** TypeScript and wider platform/architecture modernization, per approved roadmap.
 
@@ -73,8 +75,12 @@ Before claiming production-ready recovery:
 - Conflict-free collaboration is not verified and remains outside current charter scope.
 - TypeScript is deferred to P3.
 
-## 6. Approval and Change Control
+## 6. AI Modernization Roadmap Alignment
 
-This register is approved as M0 v0.4. The owner approved its content for documentation on `agentic-development`. This approval does not authorize production rule changes, migrations, deployment, or deletion of user data.
+Broader AI evolution is governed by the approved [AI Modernization & Evolution Roadmap](AI_MODERNIZATION_ROADMAP.md) v0.1. The new risks SS-R25–SS-R28 are potential risks for future RAG, retrieved-context workflows, governance, and evaluation; they are not claims that these capabilities currently exist or that exploitation has occurred. Address them during the relevant approved work packages.
+
+## 7. Approval and Change Control
+
+This register is approved as M0 v0.5. Evans Abraham approved these documentation updates for `agentic-development` on 2026-11-28. This approval does not authorize production rule changes, migrations, deployment, or deletion of user data.
 
 Risk changes should preserve these IDs; additions receive new IDs, and reclassification should be recorded in subsequent versions.
