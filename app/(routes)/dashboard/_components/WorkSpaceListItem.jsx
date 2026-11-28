@@ -3,7 +3,8 @@ import { Trash2Icon } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
-import { deleteDoc, doc, collection, query, where, getDocs } from 'firebase/firestore';
+import { deleteDoc, doc, collection, query, where, getDocs, writeBatch } from 'firebase/firestore';
+import { deleteWorkspaceCascade } from '@/lib/workspace-cascade-delete';
 import { db } from '@/config/firebaseConfig';
 import { toast } from 'sonner';
 import { useFirebaseAuthBridge } from '@/app/providers/FirebaseAuthBridge';
@@ -25,11 +26,18 @@ function WorkSpaceListItem({ workSpaceList }) {
         where("workspaceId", "==", Number(workspaceId))
       );
       const documentSnapshots = await getDocs(documentsQuery);
-      await Promise.all(documentSnapshots.docs.map(async (document) => {
-        await deleteDoc(doc(db, "workspaceDocuments", document.id));
-        await deleteDoc(doc(db, "documentOutput", document.id));
-      }));
-      await deleteDoc(doc(db, "Workspace", String(workspaceId)));
+      await deleteWorkspaceCascade({
+        documentIds: documentSnapshots.docs.map((document) => document.id),
+        deleteDocumentPair: async (documentIds) => {
+          const batch = writeBatch(db);
+          for (const documentId of documentIds) {
+            batch.delete(doc(db, "workspaceDocuments", documentId));
+            batch.delete(doc(db, "documentOutput", documentId));
+          }
+          await batch.commit();
+        },
+        deleteWorkspace: () => deleteDoc(doc(db, "Workspace", String(workspaceId))),
+      });
       toast.success('Workspace and related documents deleted successfully!');
       setIsDialogOpen(false);
       setSelectedWorkspace(null);
