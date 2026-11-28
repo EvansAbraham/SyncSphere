@@ -32,13 +32,15 @@
 - [x] Project Owner review of design draft (approved 2026-11-28; remaining decisions are tracked for resolution before WP-04 implementation).
 - **Owner-approved design draft:** [docs/security/FIRESTORE_AUTHORIZATION_DESIGN.md](FIRESTORE_AUTHORIZATION_DESIGN.md). Approval recorded 2026-11-28. Open decisions remain tracked and must be resolved before WP-04 rules implementation. No rules implementation, data migration, or production change has been performed.
 
-### WP-03 — Clerk ↔ Firebase trusted identity bridge (in progress)
+### WP-03 — Clerk ↔ Firebase trusted identity bridge (in progress; Stage C verified)
 - [x] Inventory current bridge prerequisites (2026-11-28): `firebase-admin` is already declared in `package.json`; `lib/firebase-admin/admin.js` has a server-only Admin initializer and validates client/Admin project ID match; `config/firebaseAuth.js` exports Firebase Client Auth via `getAuth(app)`. Existing unit tests cover Admin initialization and Firebase client config.
-- [ ] Implement trusted Clerk identity to Firebase UID/token exchange according to the approved architecture. **No endpoint or client token exchange currently exists in source review.**
-- [ ] Ensure client-provided user/org IDs are not treated as proof of identity.
-- [ ] Add bridge tests for valid, invalid, missing, expired, and mismatched identity/token cases.
-- [ ] Verify session lifecycle and sign-out behavior.
-- **Scope note:** Stage A prerequisite work is partly present; this checkpoint is documentation/inventory only. No env values, Firestore Rules/data, or production deployment have been touched. Next implementation slice is the trusted token endpoint (Stage B), with origin/CSRF and abuse-control design reviewed before client lifecycle wiring.
+- [x] Stage B — trusted token endpoint: `POST /api/auth/firebase-token` verifies Clerk server session, derives Firebase UID only from the Clerk `userId`, checks same-origin request signals, uses no-cache headers, and returns generic errors. Route tests cover cross-origin/missing headers, unauthenticated access, spoofed identity fields, and failure handling.
+- [x] Stage C — client auth lifecycle: mounted `FirebaseAuthBridgeProvider` within `ClerkProvider`; exchange custom token via Firebase Client Auth; synchronize sign-in/sign-out/account changes; cancel stale token requests and serialize auth sync; clear prior Firebase UID before account switch; verify returned Firebase UID matches Clerk; expose loading/authenticated/signed-out/error states via `useFirebaseAuthBridge()`.
+- [x] Focused client lifecycle tests: sign-in/token exchange, sign-out cleanup, different-user cleanup, account switching, endpoint failure, and mismatched Firebase UID.
+- [x] CI run #95 completed successfully (2026-11-28): lint, tests, and production build all passed. Evidence: [run #95](https://github.com/EvansAbraham/SyncSphere/actions/runs/46156856828). Logs were inspected.
+- [ ] Stage D — integrate readiness gating into existing Firestore workspace/document reads and mutations; add regression coverage for existing workflows and races.
+- [ ] Stage E — review lifecycle failure modes, retry/backoff policy, Firebase Auth Emulator coverage where feasible, and rollout readiness.
+- **Residual risk:** token endpoint lacks distributed rate limiting/robust abuse controls; proxy/origin behavior still needs deployment review. The provider is not a substitute for Firestore Rules. Firestore consumers have not yet been gated by readiness. No Rules/data migration, production environment changes, or deployment have been performed.
 - **Dependency:** WP-02 design.
 
 ### WP-04 — Firestore rules implementation & validation
