@@ -86,6 +86,7 @@ Open · Investigating · In Progress · Blocked · Deferred · Fixed (unverified
 - **Resolution plan:** Review the remaining lifecycle/snapshot race scenarios; add targeted tests and fix within a bounded work package.
 - **Evidence:** Autosave fix residual-risk review; CI #123.
 - **Stage D source review (2026-11-28):** confirmed the initial Firestore snapshot may render after editor readiness and replace early unsaved edits while autosave is gated on `isFetchedRef`; subsequent remote snapshots may also render over local pending edits without a dirty-state guard. Existing cleanup disposes the queue/listener, but an already-started Firestore write cannot be cancelled. These are source-level risks; no production loss observed or code changed during this review.
+- **WP-03-D2 source review (2026-11-28):** confirmed effect activity checks guard entry and the pre-`updateDoc` boundary, but an already-issued Firestore write is not cancellable on auth loss, unmount, or document transition. Save closure retains the document/user context; bridge sync uses generation cancellation for fetches and a serialized queue, while already-running Firebase sign-in/sign-out calls are not abortable. Post-write revision bookkeeping and stale completions need explicit test coverage. Auth-loss failures during teardown may be logged silently to the user. Remediation plan documented in the temporary checklist; no implementation or production action performed.
 
 ### F-006 — Broader Firestore consumer inventory is incomplete
 - **Source:** Security audit
