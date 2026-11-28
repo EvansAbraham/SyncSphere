@@ -51,20 +51,20 @@ export function FirebaseAuthBridgeProvider({ children }) {
     enqueueSync(async () => {
       if (!isCurrent()) return;
 
-      if (!userId) {
-        await signOut(auth);
-        if (isCurrent()) {
-          setState({ status: "signed-out", firebaseUid: null, error: null });
-        }
-        return;
-      }
-
-      if (auth.currentUser?.uid !== userId) {
-        await signOut(auth);
-      }
-      if (!isCurrent()) return;
-
       try {
+        if (!userId) {
+          await signOut(auth);
+          if (isCurrent()) {
+            setState({ status: "signed-out", firebaseUid: null, error: null });
+          }
+          return;
+        }
+
+        if (auth.currentUser?.uid !== userId) {
+          await signOut(auth);
+        }
+        if (!isCurrent()) return;
+
         const response = await fetch("/api/auth/firebase-token", {
           method: "POST",
           credentials: "same-origin",
