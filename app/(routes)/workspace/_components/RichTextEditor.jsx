@@ -80,7 +80,9 @@ function RichTextEditor({ params }) {
             const parsed = typeof data.output === 'string' ? (data.output.trim() ? JSON.parse(data.output) : null) : data.output;
             if (parsed) {
               suppressEditorChangeRef.current = true;
-              Promise.resolve(editorInstance?.render(parsed)).finally(() => {
+              Promise.resolve(editorInstance?.render(parsed)).catch((error) => {
+                console.error('Unable to render document snapshot:', error);
+              }).finally(() => {
                 suppressEditorChangeRef.current = false;
               });
             }
