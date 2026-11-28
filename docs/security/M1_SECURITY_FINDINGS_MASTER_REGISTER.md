@@ -3,7 +3,7 @@
 - CI checkout was corrected to checkout the triggering commit, removing the hardcoded base ref.
 - CI run #135 / ID `46162201522` failed in the new test `ignores snapshots from the local writer while still resolving initialization`: expected `false`, received `true`. The implementation correctly permits the first local-authored snapshot to render for initialization; the test expectation was wrong.
 - Corrected the regression test to assert first local snapshot renders and a later local-write echo is ignored. Correction commit on `agentic-development`: `3da302a12e74c5e59cf4207b6e1815a8fa264913`.
-- **Verification pending:** the test correction has not yet been validated by a fresh CI run. GitHub connector supports reading runs/logs but cannot dispatch a run; API commits have not produced a new run in the visible list.
+- **Verification:** CI run #138 (ID `46162439360`) passed on commit `965e1887fb53804b98d05acaf1d27a83dc5a5e60`: ESLint passed, all 36 tests passed (8 files), production build succeeded. Full logs inspected; existing warnings remain as listed in the checklist.
 - **Cleanup pending:** merged feature branch `wp-03-d1-editor-snapshot-integrity` still exists. The connected GitHub actions available here are read/update-ref, but do not provide branch deletion; deletion must be done through GitHub UI or a suitable delete-ref integration.
 - No production deployment or data mutation.
 
