@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import DocumentOptions from './DocumentOptions';
-import { deleteDoc, doc } from 'firebase/firestore';
+import { doc, writeBatch } from 'firebase/firestore';
 import { db } from '@/config/firebaseConfig';
 import { toast } from 'sonner';
 import { useFirebaseAuthBridge } from '@/app/providers/FirebaseAuthBridge';
@@ -18,8 +18,10 @@ function DocumentList({ documentList, params }) {
       return;
     }
     try {
-      await deleteDoc(doc(db, "workspaceDocuments", docId));
-      await deleteDoc(doc(db, "documentOutput", docId));
+      const batch = writeBatch(db);
+      batch.delete(doc(db, "workspaceDocuments", docId));
+      batch.delete(doc(db, "documentOutput", docId));
+      await batch.commit();
       toast.success('Document Deleted!');
     } catch (error) {
       console.error('Failed to delete document:', error);
