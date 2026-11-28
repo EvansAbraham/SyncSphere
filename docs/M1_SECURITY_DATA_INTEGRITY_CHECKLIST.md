@@ -112,7 +112,7 @@
 
 ## Current next action
 
-WP-01 is complete. WP-02 authorization design is Owner-approved with remaining policy decisions tracked. WP-03 is underway: existing Firebase Admin/client Auth prerequisites are verified; implement and test the trusted token endpoint next. Gemini key protection remains tracked in WP-05.
+WP-01 is complete. WP-02 authorization design is Owner-approved with remaining policy decisions tracked. WP-03 Stage B token endpoint and Stage C client lifecycle are implemented and CI-verified; next is Stage D integration of bridge readiness into Firestore workspace/document consumers and regression testing. Gemini key protection remains tracked in WP-05.
 
 ### WP-01 follow-up — identity bridge investigation and Gemini risk handoff (2026-11-28)
 
