@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { db } from '@/config/firebaseConfig';
 import CoverPicker from '@/app/_components/CoverPicker';
 import EmojiPickerComponent from '@/app/_components/EmojiPickerComponent';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, writeBatch } from 'firebase/firestore';
 import { useAuth, useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -32,7 +32,9 @@ function CreateWorkSpace() {
     setLoading(true);
     const workspaceId = Date.now();
     try {
-      await setDoc(doc(db, 'Workspace', workspaceId.toString()), {
+      const docId = uuid4();
+      const batch = writeBatch(db);
+      batch.set(doc(db, 'Workspace', workspaceId.toString()), {
         workSpaceName,
         emoji,
         coverImage,
@@ -40,8 +42,7 @@ function CreateWorkSpace() {
         id: workspaceId,
         orgId: orgId || user.primaryEmailAddress?.emailAddress,
       });
-      const docId = uuid4();
-      await setDoc(doc(db, 'workspaceDocuments', docId.toString()), {
+      batch.set(doc(db, 'workspaceDocuments', docId.toString()), {
         workspaceId,
         createdBy: user.primaryEmailAddress?.emailAddress,
         coverImage: null,
@@ -50,10 +51,11 @@ function CreateWorkSpace() {
         documentName: 'Untitled Document',
         documentOutput: [],
       });
-      await setDoc(doc(db, 'documentOutput', docId.toString()), {
+      batch.set(doc(db, 'documentOutput', docId.toString()), {
         docId,
         output: [],
       });
+      await batch.commit();
       router.replace('/workspace/' + workspaceId + "/" + docId);
     } catch (error) {
       console.error('Workspace creation failed:', error);
