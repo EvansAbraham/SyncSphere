@@ -28,6 +28,7 @@ describe("Firebase Admin initializer", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubEnv("FIREBASE_ADMIN_PROJECT_ID", validEnv.FIREBASE_ADMIN_PROJECT_ID);
+    vi.stubEnv("NEXT_PUBLIC_FIREBASE_PROJECT_ID", validEnv.FIREBASE_ADMIN_PROJECT_ID);
     vi.stubEnv("FIREBASE_ADMIN_CLIENT_EMAIL", validEnv.FIREBASE_ADMIN_CLIENT_EMAIL);
     vi.stubEnv("FIREBASE_ADMIN_PRIVATE_KEY", validEnv.FIREBASE_ADMIN_PRIVATE_KEY);
     getApps.mockReturnValue([]);
@@ -76,6 +77,17 @@ describe("Firebase Admin initializer", () => {
     );
     expect(initializeApp).not.toHaveBeenCalled();
   });
+
+  it("rejects configuration when Client and Admin project IDs differ", async () => {
+    vi.stubEnv("NEXT_PUBLIC_FIREBASE_PROJECT_ID", "different-client-project");
+    const { getFirebaseAdminApp } = await loadAdminModule();
+
+    expect(() => getFirebaseAdminApp()).toThrow(
+      "Firebase Client and Admin project IDs must match. Check NEXT_PUBLIC_FIREBASE_PROJECT_ID and FIREBASE_ADMIN_PROJECT_ID.",
+    );
+    expect(initializeApp).not.toHaveBeenCalled();
+  });
+
 
   it("rejects reuse when the existing app targets a different project", async () => {
     getApps.mockReturnValue([
