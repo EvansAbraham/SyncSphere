@@ -20,11 +20,13 @@ import { useUser } from '@clerk/nextjs';
 import GenerateAITemplate from './GenerateAITemplate';
 import { useFirebaseAuthBridge } from '@/app/providers/FirebaseAuthBridge';
 import { createAutosaveQueue } from '@/lib/document-autosave';
+import { createDocumentSnapshotCoordinator } from '@/lib/document-snapshot-coordinator';
 
 function RichTextEditor({ params }) {
   const editorRef = useRef(null);
   const unsubscribeRef = useRef(null);
-  const isFetchedRef = useRef(false);
+  const snapshotCoordinatorRef = useRef(null);
+  const suppressEditorChangeRef = useRef(false);
   const { user } = useUser();
   const { status: bridgeStatus } = useFirebaseAuthBridge();
   const [documentOutput, setDocumentOutput] = useState(null);
@@ -33,7 +35,7 @@ function RichTextEditor({ params }) {
   useEffect(() => {
     let active = true;
     let editorInstance = null;
-    isFetchedRef.current = false;
+    snapshotCoordinatorRef.current = createDocumentSnapshotCoordinator();
     setEditorReady(false);
     setDocumentOutput(null);
 
@@ -42,40 +44,54 @@ function RichTextEditor({ params }) {
     }
 
     const autosaveQueue = createAutosaveQueue(async () => {
-      if (!active || bridgeStatus !== 'authenticated' || !user || !editorRef.current || !isFetchedRef.current) return;
+      if (!active || bridgeStatus !== 'authenticated' || !user || !editorRef.current || !snapshotCoordinatorRef.current?.initialized) return;
       try {
         const currentEditor = editorRef.current;
+        const coordinator = snapshotCoordinatorRef.current;
+        const revision = coordinator.localRevision;
         const outputData = await currentEditor.save();
         if (!active || bridgeStatus !== 'authenticated' || editorRef.current !== currentEditor) return;
         await updateDoc(doc(db, 'documentOutput', params.documentid), {
           output: JSON.stringify(outputData),
           editedBy: user.primaryEmailAddress?.emailAddress,
         });
+        coordinator.markPersisted(revision);
       } catch (error) {
         if (active) console.error('Unable to save document:', error);
       }
     }, () => active && bridgeStatus === 'authenticated' && Boolean(user));
 
     const saveDocument = () => {
-      if (!active || bridgeStatus !== 'authenticated' || !user || !editorRef.current || !isFetchedRef.current) return;
+      if (suppressEditorChangeRef.current) return;
+      if (!active || bridgeStatus !== 'authenticated' || !user || !editorRef.current || !snapshotCoordinatorRef.current?.initialized) return;
+      snapshotCoordinatorRef.current.markLocalEdit();
       autosaveQueue.notify();
     };
 
     const listenForDocumentOutput = () => {
       unsubscribeRef.current = onSnapshot(doc(db, 'documentOutput', params.documentid), (snapshot) => {
-        if (!active || !snapshot.exists()) return;
-        const data = snapshot.data();
-        if (data.editedBy !== user.primaryEmailAddress?.emailAddress || !isFetchedRef.current) {
-          if (data.output) {
-            try {
-              const parsed = typeof data.output === 'string' ? (data.output.trim() ? JSON.parse(data.output) : null) : data.output;
-              if (parsed) editorInstance?.render(parsed);
-            } catch (error) {
-              console.error('Error parsing document output:', error);
+        if (!active) return;
+        const data = snapshot.exists() ? snapshot.data() : {};
+        const isLocalWrite = data.editedBy === user.primaryEmailAddress?.emailAddress;
+        const decision = snapshotCoordinatorRef.current?.receiveSnapshot({ isLocalWrite });
+        if (!decision) return;
+        if (decision.shouldRender && data.output) {
+          try {
+            const parsed = typeof data.output === 'string' ? (data.output.trim() ? JSON.parse(data.output) : null) : data.output;
+            if (parsed) {
+              suppressEditorChangeRef.current = true;
+              Promise.resolve(editorInstance?.render(parsed)).catch((error) => {
+                console.error('Unable to render document snapshot:', error);
+              }).finally(() => {
+                suppressEditorChangeRef.current = false;
+              });
             }
+          } catch (error) {
+            suppressEditorChangeRef.current = false;
+            console.error('Error parsing document output:', error);
           }
-          isFetchedRef.current = true;
         }
+        if (!editorReady) setEditorReady(true);
       }, (error) => {
         if (active) console.error('Document output subscription failed:', error);
       });
@@ -87,7 +103,6 @@ function RichTextEditor({ params }) {
       onReady: () => {
         if (!active) return;
         editorRef.current = editorInstance;
-        setEditorReady(true);
         listenForDocumentOutput();
       },
       tools: {
@@ -126,6 +141,7 @@ function RichTextEditor({ params }) {
       unsubscribeRef.current?.();
       unsubscribeRef.current = null;
       editorRef.current = null;
+      snapshotCoordinatorRef.current = null;
       if (editorInstance && typeof editorInstance.destroy === 'function') {
         editorInstance.destroy();
       }
@@ -140,7 +156,7 @@ function RichTextEditor({ params }) {
   return (
     <div className='lg:-ml-20'>
       {message && <p className='mb-4 text-sm text-muted-foreground'>{message}</p>}
-      <div id="editorjs" className={message ? 'hidden' : ''}></div>
+      <div id="editorjs" className={!editorReady ? 'hidden' : ''}></div>
       {bridgeStatus === 'authenticated' && editorReady && (
         <div className='fixed bottom-10 md:ml-80 left-0 z-10'>
           <GenerateAITemplate setGenerateAIOutput={(output) => {

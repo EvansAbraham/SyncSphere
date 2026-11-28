@@ -23,10 +23,8 @@ jobs:
     timeout-minutes: 25
 
     steps:
-      - name: Checkout recovery branch
+      - name: Checkout triggering commit
         uses: actions/checkout@v4
-        with:
-          ref: agentic-development
 
       - name: Set up Node.js 24
         uses: actions/setup-node@v4
