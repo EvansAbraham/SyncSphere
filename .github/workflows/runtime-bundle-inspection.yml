@@ -1,0 +1,56 @@
+name: SyncSphere Runtime Bundle Inspection
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: syncsphere-runtime-bundle-inspection
+  cancel-in-progress: true
+
+jobs:
+  build-client-bundles:
+    name: Build isolated client bundles for inspection
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout agentic-development
+        uses: actions/checkout@v4
+        with:
+          ref: agentic-development
+
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Build with non-production placeholder environment
+        run: npm run build
+        env:
+          NEXT_PUBLIC_FIREBASE_API_KEY: inspection-placeholder
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: inspection-placeholder.firebaseapp.com
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: inspection-placeholder
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: inspection-placeholder.appspot.com
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: "000000000000"
+          NEXT_PUBLIC_FIREBASE_APP_ID: inspection-placeholder
+          NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: inspection-placeholder
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_inspection_placeholder
+          CLERK_SECRET_KEY: sk_test_inspection_placeholder
+          NEXT_PUBLIC_CLERK_SIGN_IN_URL: /sign-in
+          NEXT_PUBLIC_CLERK_SIGN_UP_URL: /sign-up
+          NEXT_PUBLIC_GEMINI_API_KEY: inspection-placeholder
+
+      - name: Upload client bundle artifacts only
+        uses: actions/upload-artifact@v4
+        with:
+          name: syncsphere-client-bundles
+          path: .next/static/
+          if-no-files-found: error
+          retention-days: 3
