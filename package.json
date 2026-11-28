@@ -38,7 +38,8 @@
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "uuid4": "^2.0.3",
-    "firebase-admin": "^13.0.0"
+    "firebase-admin": "^13.0.0",
+    "simple-image-editorjs": "^1.4.0"
   },
   "devDependencies": {
     "@coolbytes/editorjs-delimiter": "^1.0.3",
@@ -54,7 +55,6 @@
     "editorjs-inline-image": "^2.2.2",
     "editorjs-undo": "^2.0.28",
     "postcss": "^8",
-    "simple-image-editorjs": "^1.4.0",
     "tailwindcss": "^3.4.1",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
