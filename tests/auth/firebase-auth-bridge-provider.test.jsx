@@ -11,9 +11,9 @@ vi.mock("firebase/auth", () => ({
   signInWithCustomToken: firebaseSignIn,
   signOut: firebaseSignOut,
 }));
-vi.mock("@/config/firebaseAuth", () => ({ auth: firebaseAuth }));
+vi.mock("../../config/firebaseAuth", () => ({ auth: firebaseAuth }));
 
-import { FirebaseAuthBridgeProvider, useFirebaseAuthBridge } from "@/app/providers/FirebaseAuthBridge";
+import { FirebaseAuthBridgeProvider, useFirebaseAuthBridge } from "../../app/providers/FirebaseAuthBridge.jsx";
 
 function BridgeState() {
   const state = useFirebaseAuthBridge();
