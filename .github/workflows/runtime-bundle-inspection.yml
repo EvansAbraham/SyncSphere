@@ -2,6 +2,11 @@ name: SyncSphere Runtime Bundle Inspection
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - agentic-development
+    paths:
+      - .github/workflows/runtime-bundle-inspection.yml
 
 permissions:
   contents: read
