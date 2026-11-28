@@ -2,7 +2,7 @@
 
 **Project:** SyncSphere  
 **Document Status:** Approved  
-**Version:** 0.2  
+**Version:** 0.3  
 **Document Type:** Recovery & Modernization Roadmap  
 **Approved By:** Evans Abraham (Project Owner)  
 **Target Branch:** `agentic-development`  
@@ -55,7 +55,7 @@ Critical M1 work may begin as soon as its risk and scope are understood; securit
 
 **Objective:** establish an accurate baseline before implementation.
 
-**Scope:** inspect repository structure, package scripts and versions, build/install status, application routes, auth and authorization, Firestore rules/data model, workspace/document CRUD, Editor.js lifecycle and persistence, Gemini flow/secrets, responsive UI, CI and deployment configuration.
+**Scope:** inspect repository structure, package scripts and versions, build/install status, application routes, auth and authorization, Firestore rules/data model, workspace/document CRUD, Editor.js lifecycle and persistence, Gemini flow/secrets/model version and provider compatibility, responsive UI, CI and deployment configuration.
 
 **Deliverables:** feature and architecture inventory, baseline build/test/lint results, risk register, dependency compatibility questions, prioritized work packages.
 
@@ -83,9 +83,9 @@ Critical M1 work may begin as soon as its risk and scope are understood; securit
 
 ### M3 — Core Application Stability (P0/P1)
 
-Stabilize workspace/document CRUD, validation, persistence, save states, stale-write prevention, Editor.js initialization and teardown, listener cleanup, race conditions, duplicate actions, partial failures, empty/error/loading states, and content recovery.
+Stabilize workspace/document CRUD, validation, persistence, save states, stale-write prevention, Editor.js initialization and teardown, listener cleanup, race conditions, duplicate actions, partial failures, empty/error/loading states, content recovery, and AI generation reliability. Include a focused Gemini integration modernization work package: identify the configured model and SDK, verify current model availability/support and deprecation lifecycle using official provider documentation, evaluate replacement candidates against output quality, structured-response compatibility, latency, cost, and application requirements, then select and migrate deliberately. Validate prompts, response parsing/schema handling, generation configuration, error classification, timeout/retry behavior, and regression coverage. Do not select or upgrade a model solely because it is the newest.
 
-**Exit:** core workflows verified end-to-end; failed saves do not silently discard content; lifecycle and stale-write issues controlled; regression checks pass.
+**Exit:** core workflows verified end-to-end; failed saves do not silently discard content; lifecycle and stale-write issues controlled; AI generation reliably produces validated output using a supported, documented model configuration (or remaining limitation formally dispositioned); regression checks pass.
 
 ### M4 — Responsive Experience (P1/P2)
 
@@ -144,6 +144,7 @@ Verification labels: **Passed**, **Failed**, **Blocked**, **Not run**. Never rep
 | Partial/duplicate CRUD | High | Validation, safeguards, idempotency where appropriate |
 | Framework/dependency migration regressions | High | Compatibility matrix, staged commits, rollback |
 | AI malformed/untrusted output | High | Validate, safely render, user review |
+| AI model lifecycle/compatibility | Medium–High | Track model support/deprecation, evaluate supported replacement, document migration and regression checks |
 | Mobile usability | Medium | Responsive verification |
 | PDF pagination/content fidelity | Medium | Representative export testing |
 
@@ -161,7 +162,7 @@ A milestone is complete when its work packages meet acceptance criteria, appropr
 
 ## 11. Recovery Completion
 
-Recovery completion requires verified auth/access boundaries; reliable workspace/document operations and persistence; stable editor and supported formatting; responsive usability; secure, validated, user-controlled AI generation; PDF export; automated verification and CI; current setup/architecture docs; known risks disclosed; and explicit Project Owner approval.
+Recovery completion requires verified auth/access boundaries; reliable workspace/document operations and persistence; stable editor and supported formatting; responsive usability; secure, validated, user-controlled AI generation using an appropriately supported and documented model; PDF export; automated verification and CI; current setup/architecture docs; known risks disclosed; and explicit Project Owner approval.
 
 ## 12. Roadmap Maintenance
 
@@ -169,4 +170,4 @@ This roadmap may be adjusted based on baseline findings, feasibility, dependenci
 
 ---
 
-**End of Recovery Roadmap — Version 0.2 — Approved**
+**End of Recovery Roadmap — Version 0.3 — Approved**
