@@ -21,6 +21,7 @@ import GenerateAITemplate from './GenerateAITemplate';
 import { useFirebaseAuthBridge } from '@/app/providers/FirebaseAuthBridge';
 import { createAutosaveQueue } from '@/lib/document-autosave';
 import { createDocumentSnapshotCoordinator } from '@/lib/document-snapshot-coordinator';
+import { executeDocumentSaveSession } from '@/lib/document-save-session';
 
 function RichTextEditor({ params }) {
   const editorRef = useRef(null);
@@ -45,19 +46,31 @@ function RichTextEditor({ params }) {
 
     const autosaveQueue = createAutosaveQueue(async () => {
       if (!active || bridgeStatus !== 'authenticated' || !user || !editorRef.current || !snapshotCoordinatorRef.current?.initialized) return;
+      const currentEditor = editorRef.current;
+      const coordinator = snapshotCoordinatorRef.current;
+      const documentId = params.documentid;
+      const userEmail = user.primaryEmailAddress?.emailAddress;
+      const revision = coordinator.localRevision;
+      const isCurrentSession = () => active
+        && bridgeStatus === 'authenticated'
+        && Boolean(user)
+        && editorRef.current === currentEditor
+        && snapshotCoordinatorRef.current === coordinator;
       try {
-        const currentEditor = editorRef.current;
-        const coordinator = snapshotCoordinatorRef.current;
-        const revision = coordinator.localRevision;
-        const outputData = await currentEditor.save();
-        if (!active || bridgeStatus !== 'authenticated' || editorRef.current !== currentEditor) return;
-        await updateDoc(doc(db, 'documentOutput', params.documentid), {
-          output: JSON.stringify(outputData),
-          editedBy: user.primaryEmailAddress?.emailAddress,
+        await executeDocumentSaveSession({
+          isCurrent: isCurrentSession,
+          prepare: async () => ({
+            revision,
+            outputData: await currentEditor.save(),
+          }),
+          persist: ({ outputData }) => updateDoc(doc(db, 'documentOutput', documentId), {
+            output: JSON.stringify(outputData),
+            editedBy: userEmail,
+          }),
+          onPersisted: () => coordinator.markPersisted(revision),
         });
-        coordinator.markPersisted(revision);
       } catch (error) {
-        if (active) console.error('Unable to save document:', error);
+        if (isCurrentSession()) console.error('Unable to save document:', error);
       }
     }, () => active && bridgeStatus === 'authenticated' && Boolean(user));
 
