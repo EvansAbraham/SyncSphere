@@ -2,367 +2,493 @@
 
 **Project:** SyncSphere  
 **Document Status:** Approved  
-**Version:** 0.1  
+**Version:** 0.2  
 **Document Type:** AI Architecture, Modernization & Product Evolution Roadmap  
 **Approved By:** Evans Abraham  
 **Approval Date:** 2026-11-28  
 **Target Branch:** `agentic-development`  
+**Supersedes:** AI Modernization Roadmap v0.1  
 **Related Documents:** Recovery Roadmap v0.4; Technical Plan v0.4; Risk Register v0.5
 
 ---
 
 ## 1. Purpose
 
-This roadmap defines the long-term evolution of SyncSphere's AI capabilities.
+This roadmap defines the direction for evolving SyncSphere's AI capabilities from basic AI-assisted document functionality into a context-aware, intelligent document and knowledge workspace.
 
-SyncSphere should evolve beyond basic AI-powered text generation into an intelligent document and knowledge platform capable of understanding user content, assisting with document workflows, retrieving relevant knowledge, and delivering useful context-aware results.
+It establishes the architecture, model strategy, usage allocation policy, capability milestones, reliability expectations, and security boundaries for future AI development.
 
-This roadmap establishes a phased approach to AI modernization that prioritizes reliability, security, usefulness, maintainability, cost control, and user trust.
+The roadmap is intended to be a living engineering document. It establishes the currently agreed direction without prematurely deciding every implementation detail. Future changes may be proposed, reviewed, and approved as new requirements or evidence emerge.
 
-This is an incremental product evolution, not a rewrite or an attempt to introduce AI complexity before the existing application is stable.
+AI modernization is an incremental evolution of SyncSphere—not a rewrite or an excuse to introduce unnecessary infrastructure.
 
 ## 2. Vision
 
-Transform SyncSphere from a document editor with AI assistance into a context-aware workspace where AI can help users create, understand, organize, analyze, and work with their documents and knowledge.
+Evolve SyncSphere into an intelligent document workspace capable of helping users create, understand, transform, analyze, retrieve, and organize knowledge through reliable AI assistance.
 
-AI should enhance the user's work without taking control of it.
+AI should augment the user's work while preserving user control, document integrity, privacy, and transparency.
 
-### Product principles
+### Product Principles
 
-- **User-controlled:** AI-generated or modified content remains reviewable and user-controlled.
-- **Grounded:** Answers should use relevant source material when available and distinguish sourced information from unsupported claims.
-- **Secure:** AI must respect authentication, authorization, document ownership, and workspace boundaries.
-- **Reliable:** Failures must be handled gracefully without losing or silently replacing user content.
-- **Purposeful:** Every AI feature must solve a genuine user problem.
-- **Efficient:** Manage latency, model usage, context size, and cost.
-- **Modular:** Model providers, prompts, retrieval, validation, and workflows should not be tightly coupled to UI components.
-- **Incremental:** Each phase delivers measurable improvements and establishes prerequisites for the next.
+- **User-controlled:** AI-generated and modified content remains reviewable and controlled by the user.
+- **Grounded:** Responses should use relevant source material when available and distinguish evidence from unsupported conclusions.
+- **Secure:** Authentication, authorization, ownership, and workspace boundaries must be enforced.
+- **Reliable:** AI failures must not silently destroy, replace, or corrupt user content.
+- **Model-flexible:** SyncSphere must not be unnecessarily tied to one AI provider or model.
+- **Purposeful:** Every AI capability should address a genuine user need.
+- **Efficient:** Model selection, context usage, latency, and costs should be managed.
+- **Incremental:** Capabilities are introduced through measurable milestones and acceptance criteria.
 
-## 3. Relationship to the Recovery Roadmap
+## 3. Relationship to Product Recovery
 
-AI modernization is a separate but connected engineering track.
+AI Modernization is a separate but connected engineering track.
 
 | Track | Objective |
 |---|---|
-| Track A — Recovery & Product Stability | Recover, secure, stabilize, and modernize SyncSphere's existing functionality. |
-| Track B — AI Modernization & Evolution | Build reliable AI foundations and progressively introduce knowledge intelligence and AI-native workflows. |
+| Track A — Recovery & Product Stability | Secure, recover, stabilize, and modernize existing application functionality. |
+| Track B — AI Modernization & Evolution | Establish a flexible AI foundation and progressively introduce intelligent document and knowledge capabilities. |
 
-Track B must respect Track A's security and stability gates.
+AI work must respect the security, data integrity, and stability requirements of the recovery track.
 
-### Dependencies
+AI features that depend on document persistence, editor behavior, authentication, or workspace permissions must not bypass their corresponding recovery requirements.
 
-- M1 Security & Data Integrity establishes trusted identity, access boundaries, and safe server-side AI operations.
-- M2 Platform Modernization establishes a compatible and maintainable platform.
-- M3 Core Application Stability includes current Gemini model and integration modernization.
-- AI features depending on document persistence, editor behavior, or responsive workflows must respect their recovery milestone dependencies.
+Independent AI architecture work may proceed only when prerequisites are satisfied and scope is approved.
 
-AI modernization may proceed in parallel with independent recovery tasks only when its prerequisites are satisfied and scope is approved.
-
-## 4. Phase Overview
+## 4. AI Modernization Phases
 
 | Phase | Name | Primary Outcome |
 |---|---|---|
-| Phase 0 | Revival & Readiness | Stable, secure foundations for AI |
-| Phase 1 | AI Foundation | Maintainable AI architecture and reliable generation |
-| Phase 2 | RAG & Knowledge Intelligence | Context-aware, source-grounded document understanding |
-| Phase 3 | AI Governance & Cost Control | Responsible usage, budgets, evaluation, and observability |
-| Phase 4 | AI-Assisted Document Workflows | Practical document transformation and intelligence |
-| Phase 5 | AI-Native Knowledge Workspace | Connected, proactive, user-controlled knowledge experiences |
+| Phase 0 | Revival & Readiness | A secure and understood AI baseline |
+| Phase 1 | AI Foundation & Multi-Model Architecture | Provider-flexible architecture, model tiers, routing, and reliability |
+| Phase 2 | RAG & Knowledge Intelligence | Context-aware and source-grounded document intelligence |
+| Phase 3 | AI Governance & Cost Control | Usage accounting, limits, quality evaluation, and cost observability |
+| Phase 4 | AI-Assisted Document Workflows | Practical AI-powered document operations |
+| Phase 5 | AI-Native Knowledge Workspace | Connected, intelligent, bounded, user-controlled workflows |
 
-Phases represent dependency and capability progression, not rigid calendar deadlines. Advancement is determined by acceptance criteria, evidence, and owner approval.
+Phases describe dependency progression rather than fixed calendar dates. Advancement requires acceptance criteria, evidence, and project owner review.
 
 ## 5. Phase 0 — Revival & Readiness
 
 **Priority:** P0  
-**Objective:** Establish a safe and reliable baseline before expanding AI capabilities.
+**Objective:** Establish a safe and reliable baseline before expanding AI functionality.
 
 ### Scope
 
-- Complete relevant security and data integrity recovery.
-- Verify authenticated identity for AI requests.
-- Enforce document/workspace ownership and authorization.
-- Ensure AI calls are handled through trusted server-side boundaries.
-- Remove any client exposure of provider secrets.
-- Validate inputs and AI responses.
-- Verify the current Gemini SDK, configured model, support lifecycle, and migration requirements.
-- Identify current AI generation behavior, limitations, failure modes, and dependencies.
-- Establish initial test coverage for the AI integration.
-- Define user-visible loading, failure, retry, and success behavior.
-- Protect existing document content from unintended AI overwrites.
+- Inspect the existing AI integration and its implementation.
+- Verify the SDK, API, configured model, and model lifecycle/support status.
+- Identify current generation features, limitations, and failure modes.
+- Verify authentication and authorization for AI requests.
+- Ensure provider secrets remain server-side.
+- Verify document and workspace permissions before context access.
+- Validate request inputs and AI outputs.
+- Review failure, loading, retry, and success behavior.
+- Protect document content against unintended AI overwrites.
+- Establish test coverage for the existing AI functionality.
+- Identify dependencies for AI modernization.
 
 ### Deliverables
 
-- Verified AI integration baseline.
-- Documented model/SDK status and compatibility findings.
+- Documented AI integration baseline.
+- Model and SDK lifecycle assessment.
 - Security-reviewed AI request flow.
-- AI integration test baseline.
-- Known limitations and risks.
-- Approved AI modernization scope.
+- AI test baseline.
+- Identified defects, limitations, and risks.
+- Approved modernization scope.
 
 ### Exit Criteria
 
-- AI requests are authenticated and protected.
-- Authorization is verified before accessing document context.
-- API secrets remain server-side.
-- Generation failures cannot silently destroy document content.
-- Current AI integration and model lifecycle are understood.
-- Critical AI reliability issues are resolved or formally dispositioned.
+- AI requests are appropriately authenticated and authorized.
+- Provider secrets are not exposed to clients.
+- Existing AI behavior is understood.
+- Critical reliability issues are resolved or dispositioned.
+- User content is protected against unintended changes.
+- The foundation for AI modernization is approved.
 
-## 6. Phase 1 — AI Foundation
+## 6. Phase 1 — AI Foundation & Multi-Model Architecture
 
 **Priority:** P1  
-**Objective:** Create a modular, maintainable foundation that supports future AI capabilities without scattering provider logic throughout the application.
+**Objective:** Establish a flexible AI architecture that supports multiple models, intelligent task routing, user-selectable model tiers, and consistent provider-independent behavior.
 
-### 6.1 AI Architecture
+### 6.1 Multi-Provider Architecture
 
-Introduce logical AI boundaries:
+SyncSphere should support a provider-independent AI architecture.
+
+The application must avoid embedding provider-specific API calls, model assumptions, prompt handling, or response parsing directly into feature components.
+
+### Logical Components
 
 - AI orchestration layer.
-- Task routing.
-- Model/provider adapter.
+- AI task router.
+- Provider registry.
+- Model registry and configuration.
+- Provider/model adapters.
 - Prompt management.
-- Input and output validation.
-- Context preparation.
-- Error classification and handling.
-- Usage and cost tracking interfaces.
-- Feature-level AI service boundaries.
+- Context management.
+- Input/output validation.
+- Error normalization.
+- Retry and timeout policies.
+- Usage accounting interfaces.
+- Feature-specific AI services.
 
-Avoid unnecessary microservices. The architecture should initially remain compatible with SyncSphere's existing Next.js application and trusted server-side environment.
+These are logical boundaries and do not mandate separate services, deployments, or microservices.
 
-### 6.2 Proposed AI Request Flow
+### 6.2 Model Tiers
+
+SyncSphere will provide three user-facing AI tiers.
+
+#### Lite
+
+Designed for routine, lower-complexity, cost-efficient AI tasks.
+
+**Initially discussed model:** Gemini 3.5 Flash-Lite.
+
+Typical use cases:
+
+- Basic summaries.
+- Simple rewrites.
+- Tagging and classification.
+- Short-form extraction.
+- Straightforward document questions.
+- Routine content transformations.
+
+The model selection remains configurable and subject to availability, lifecycle support, evaluation, and cost.
+
+#### Balanced / Auto
+
+Designed to automatically select an appropriate model for a task.
+
+Auto routing should consider factors such as:
+
+- Task type.
+- Complexity.
+- Required reasoning.
+- Context length.
+- Structured-output requirements.
+- Expected latency.
+- Model availability.
+- Cost.
+- User preference.
+
+The purpose is to avoid unnecessarily using advanced models for routine work while allowing more capable models when a task warrants them.
+
+Balanced / Auto is a routing strategy, not necessarily one fixed model.
+
+#### Advanced
+
+Designed for more demanding AI tasks where stronger reasoning or quality is justified.
+
+**Initially discussed model:** Gemini 3.8 Flash.
+
+Typical use cases:
+
+- Complex document analysis.
+- Multi-document synthesis.
+- Nuanced writing and transformations.
+- Detailed comparisons.
+- Higher-complexity reasoning tasks.
+
+Model assignments must be evaluated before implementation and may evolve as supported models, costs, and capabilities change.
+
+### 6.3 Model & Provider Abstraction
+
+The architecture should support:
+
+- Provider-independent task interfaces.
+- Model configuration independent of feature components.
+- Model capability metadata.
+- Task-to-model routing.
+- User tier preferences.
+- Per-request overrides where supported.
+- Consistent response contracts.
+- Provider-independent error handling.
+- Model lifecycle replacement without rewriting unrelated features.
+
+Additional providers may be incorporated in the future when justified and approved. This roadmap does not establish an unconfirmed provider roster.
+
+### 6.4 AI Request Flow
 
 ```mermaid
 flowchart TD
-    UI[User Interface] --> API[Trusted AI Entry Point]
-    API --> AUTH[Authentication & Authorization]
+    UI[AI User Interface] --> ENTRY[Trusted AI Entry Point]
+    ENTRY --> AUTH[Authentication & Authorization]
     AUTH --> VALID[Input Validation]
-    VALID --> ROUTER[AI Task Router]
+    VALID --> TASK[Task Classification]
+    TASK --> ROUTER[Model / Task Router]
     ROUTER --> CONTEXT[Context Preparation]
-    CONTEXT --> SERVICE[AI Orchestration]
-    SERVICE --> MODEL[Model Adapter]
-    MODEL --> PROVIDER[Gemini]
-    PROVIDER --> OUTPUT[Response Validation]
-    OUTPUT --> UI
+    CONTEXT --> ORCH[AI Orchestration]
+    ORCH --> REGISTRY[Provider & Model Registry]
+    REGISTRY --> ADAPTER[Provider Adapter]
+    ADAPTER --> PROVIDER[Selected AI Provider / Model]
+    PROVIDER --> NORMALIZE[Response Normalization]
+    NORMALIZE --> VALIDATE[Output Validation]
+    VALIDATE --> USAGE[Usage Accounting]
+    USAGE --> UI
 ```
 
-### 6.3 AI Service Responsibilities
+### 6.5 Reliability & Provider Handling
 
-The AI layer should provide reusable functionality for:
+The AI architecture should establish consistent handling for:
 
-- Task-specific model invocation.
-- Prompt construction.
-- Context selection and formatting.
-- Response parsing and validation.
-- Structured output support.
-- Error normalization.
-- Timeout and retry policy.
-- Usage tracking.
-- Model configuration.
-- Feature-specific behavior.
+- Timeouts.
+- Retryable and non-retryable errors.
+- Rate limiting and HTTP 429 responses.
+- Provider outages.
+- Model unavailability or retirement.
+- Malformed responses.
+- Invalid structured output.
+- Context-length errors.
+- Failed routing.
+- Fallback behavior where permitted.
 
-### 6.4 Prompt Management
+Retries must be bounded and must not produce uncontrolled usage or duplicate consequential operations.
 
-- Separate prompts by task.
-- Avoid giant universal prompts.
-- Version prompts when changes materially affect output.
-- Keep system instructions separate from user-provided content.
-- Treat documents and retrieved content as untrusted data.
-- Avoid leaking unrelated document or user context.
-- Test prompt changes against representative scenarios.
+Fallback behavior must respect user tier, feature requirements, usage limits, and cost policy. A fallback must not silently downgrade a task when doing so materially changes expected quality or behavior.
+
+Circuit-breaker behavior and additional resilience mechanisms may be introduced when justified by the implementation.
 
 ### Deliverables
 
-- Modular AI service architecture.
-- Provider/model configuration boundary.
-- Centralized task routing.
-- Prompt organization and versioning approach.
-- Validated AI response contracts.
-- Consistent AI error handling.
+- AI orchestration boundary.
+- Provider/model registry and adapters.
+- Model tier definitions.
+- Task routing architecture.
+- Prompt organization and versioning.
+- Validated response contracts.
+- Normalized error handling.
+- Reliability policy.
+- AI integration tests.
 
 ### Exit Criteria
 
-- AI calls no longer require feature components to manage provider-specific implementation details.
-- Tasks have explicit input/output expectations.
-- Failures are consistently handled.
-- Model changes can be evaluated without rewriting unrelated features.
-- Regression tests cover critical AI behavior.
+- Feature components are not tightly coupled to provider-specific implementations.
+- Model changes can be made without unrelated feature rewrites.
+- Tier selection and Auto routing follow explicit policies.
+- AI failures are normalized and handled consistently.
+- Structured outputs are validated.
+- Critical AI behaviors are covered by tests.
+- Routing, provider handling, and configuration can be maintained independently.
 
 ## 7. Phase 2 — RAG & Knowledge Intelligence
 
 **Priority:** P1  
-**Objective:** Enable SyncSphere to answer questions and perform tasks using relevant document context rather than relying solely on user prompts.
+**Objective:** Allow AI to answer questions and perform document tasks using relevant, authorized source content.
 
-RAG (Retrieval-Augmented Generation) is introduced to allow AI to retrieve relevant information from authorized content before generating a response.
+RAG (Retrieval-Augmented Generation) enables SyncSphere to retrieve relevant information before generation, reducing dependence on prompts alone and enabling traceable answers.
 
 ### 7.1 Knowledge Pipeline
 
 ```mermaid
 flowchart TD
-    DOC[Authorized Documents] --> INGEST[Content Ingestion]
-    INGEST --> CLEAN[Normalization]
-    CLEAN --> CHUNK[Chunking]
-    CHUNK --> EMBED[Embeddings]
+    DOC[Authorized Documents] --> INGEST[Ingestion]
+    INGEST --> NORMALIZE[Normalization]
+    NORMALIZE --> CHUNK[Chunking]
+    CHUNK --> EMBED[Embedding Generation]
     EMBED --> INDEX[Knowledge Index]
     QUERY[User Query] --> RETRIEVE[Retrieval]
     INDEX --> RETRIEVE
-    RETRIEVE --> CONTEXT[Relevant Context]
-    CONTEXT --> AI[Generation]
-    AI --> ANSWER[Answer with Sources]
+    RETRIEVE --> RANK[Ranking]
+    RANK --> CONTEXT[Context Preparation]
+    CONTEXT --> ROUTER[Model Routing]
+    ROUTER --> AI[Generation]
+    AI --> SOURCES[Answer & Source References]
 ```
 
 ### 7.2 Planned Capabilities
 
-- Document content ingestion.
-- Structured content normalization.
-- Chunking strategies suitable for different content types.
+- Document ingestion.
+- Content normalization.
+- Appropriate chunking.
 - Embedding generation.
 - Semantic retrieval.
 - Relevant-context ranking.
-- Context size management.
-- Source references and document attribution.
-- Context-aware answers.
-- Retrieval quality evaluation.
+- Context-size management.
+- Source attribution.
+- Retrieval evaluation.
+- Grounded answers.
 
 ### 7.3 Knowledge Sources
 
 Initial source priority:
 
-1. User's explicitly selected document.
+1. Explicitly selected documents.
 2. Documents within an authorized workspace.
-3. User-authorized connected knowledge sources, if introduced later.
+3. Future connected knowledge sources, if separately approved and integrated.
 
-Retrieval must enforce access control. Documents must not become accessible simply because they exist in an index.
+Retrieval must enforce access control. Indexed content must not become accessible merely because it exists in a knowledge index.
 
-### 7.4 Planned Knowledge Features
+### 7.4 Knowledge Features
 
-- Ask questions about a document.
+- Ask questions about individual documents.
 - Ask questions across selected documents.
-- Summarize collections of documents.
-- Extract important concepts and key points.
+- Summarize document collections.
+- Extract concepts and key points.
 - Discover related documents.
-- Compare information across documents.
-- Identify relevant passages and sources.
+- Compare information.
+- Identify relevant passages.
+- Produce source-grounded responses.
 
 ### Deliverables
 
-- Knowledge ingestion pipeline.
+- Ingestion pipeline.
 - Retrieval/indexing architecture.
 - Context selection and limits.
-- Grounded generation workflow.
-- Source attribution mechanism.
-- Retrieval evaluation dataset or test cases.
+- Grounded generation.
+- Source attribution.
+- Retrieval test cases.
 
 ### Exit Criteria
 
 - Retrieval respects authorization boundaries.
-- Relevant content is retrieved for representative queries.
-- Responses can distinguish retrieved evidence from unsupported conclusions.
-- Source attribution is traceable to the original document.
-- Retrieval and generation failures are handled safely.
+- Representative queries retrieve relevant content.
+- Source references are traceable.
+- Answers distinguish retrieved information from unsupported conclusions.
+- Retrieval failures are handled safely.
 - Performance and context limits are documented.
 
 ## 8. Phase 3 — AI Governance & Cost Control
 
 **Priority:** P1  
-**Objective:** Establish sustainable AI usage, protect the service from abuse, manage costs, and maintain AI quality as capabilities expand.
+**Objective:** Establish sustainable AI usage, allocation enforcement, provider-cost visibility, and quality evaluation.
 
-### 8.1 Usage Governance
+### 8.1 User AI Allocation Policy
 
-Implement controls for:
+The latest discussed baseline supersedes the original allocation proposal from v0.1.
 
-- Monthly usage budgets.
-- Daily usage limits.
-- Per-request limits.
-- Concurrent request limits.
-- Rate limiting.
-- Request validation.
-- Context/token budgets.
-- Abuse detection.
-- Usage reset policy.
-- Provider error and quota handling.
-
-### 8.2 Proposed Initial Usage Policy
-
-The following values are an initial proposal only and are not approved or implemented.
-
-| Control | Proposed Value |
+| Control | Revised Baseline |
 |---|---:|
-| Monthly allowance | 25,000 usage units |
-| Daily allowance | 5,000 usage units |
-| Per-request ceiling | 4,000 usage units |
-| Concurrent requests | 1 |
-| Monthly rollover | None |
-| Monthly reset | Fixed monthly reset |
+| Monthly user allocation | 25,000 tokens |
+| Daily allocation cap | None |
+| Maximum allocation per request | 2,000 tokens |
+| Concurrent AI requests | 1 |
+| Reset period | Monthly |
+| Rollover | None |
 
-**Definition of usage units:** To be determined. This may represent tokens, normalized AI credits, or a weighted measure of provider cost. The policy must be finalized only after the selected model's pricing, token accounting, and feature needs are evaluated.
+The daily cap is intentionally removed. The maximum request allowance is reduced from the previous proposal of 4,000 to 2,000.
 
-The values must be reviewed against actual usage, model cost, provider limits, and expected user behavior before implementation.
+This is the current roadmap policy direction. Server-side enforcement and accounting are not yet implemented merely by documenting these values.
 
-### 8.3 Context Management
+### 8.2 Allocation Reset & Enforcement
+
+The implementation must define and enforce:
+
+- Monthly reset behavior.
+- Consistent reset timing.
+- Allocation reservation and settlement.
+- Failed-request handling.
+- Usage reconciliation.
+- Concurrent request enforcement.
+- Request ceiling enforcement.
+- No rollover.
+- Protection against quota bypass.
+- Clear user feedback when limits are reached.
+
+The reset schedule and exact accounting implementation must be finalized before implementation.
+
+### 8.3 Separate User Allocation from Provider Usage
+
+SyncSphere must distinguish its user-facing allocation from actual provider consumption and expense.
+
+Three distinct measurements are required:
+
+1. **User allocation / credits** — the amount deducted from a user's monthly allowance.
+2. **Provider token usage** — actual input and output tokens reported or measured for each provider/model request.
+3. **Provider cost** — the estimated or actual monetary cost incurred by SyncSphere.
+
+These values must not be assumed to be interchangeable.
+
+### 8.4 Model-Weighted Accounting
+
+Different models and tasks may have different provider costs.
+
+A future accounting mechanism may assign weighted user-credit consumption according to factors such as:
+
+- Input tokens.
+- Output tokens.
+- Model pricing.
+- Task type.
+- Provider costs.
+- Additional supported modalities or processing.
+
+The exact credit conversion ratios and weighting formulas remain pending benchmarking and cost evaluation.
+
+No final conversion formula is established by this roadmap.
+
+### 8.5 Context & Usage Management
 
 - Limit context to relevant content.
 - Avoid passing entire workspaces by default.
-- Prioritize explicit user selections.
-- Estimate context and request size before provider invocation.
-- Define truncation or summarization strategies.
+- Prioritize explicit document selections.
+- Estimate request size before provider invocation.
+- Define safe truncation or summarization.
 - Track context consumption.
 - Protect sensitive information from unnecessary inclusion.
+- Respect provider/model-specific context limits.
+- Account for output-token ceilings.
 
-### 8.4 AI Quality Evaluation
+### 8.6 AI Quality Evaluation
 
-Establish an evaluation process for:
+Evaluate AI outputs for:
 
 - Correctness.
 - Relevance.
 - Groundedness.
 - Completeness.
 - Instruction adherence.
-- Structured output validity.
+- Structured-output validity.
 - Hallucination behavior.
 - Latency.
 - Cost.
-- Regression after prompt/model changes.
+- Regression across model or prompt changes.
 
-Evaluation should use representative tasks and documented expectations. Model upgrades must not be accepted based solely on novelty or benchmark claims.
+Model upgrades must not be accepted solely because they are newer or claim higher benchmarks.
 
-### 8.5 Observability
+### 8.7 Observability
 
-Capture appropriate operational metrics such as:
+Capture proportionate, privacy-conscious metrics:
 
-- Request count.
+- Request volume.
 - Success/failure rates.
 - Latency.
-- Usage consumption.
+- Provider/model selection.
+- Input/output token consumption.
+- User allocation consumption.
+- Provider cost.
 - Provider errors.
 - Rate-limit events.
+- Routing and fallback events.
 - Retrieval quality signals.
 - Feature-level usage.
 
-Avoid logging secrets or unnecessary user document content. Observability should be privacy-conscious and proportionate to the application.
+Avoid logging secrets or unnecessary document contents.
 
 ### Deliverables
 
-- AI usage policy.
-- Budget and context management.
-- Rate-limit and abuse controls.
+- Enforced monthly allocation.
+- Request and concurrency limits.
+- No-rollover policy.
+- User allocation accounting.
+- Provider token and cost tracking.
+- Model-weighted consumption policy.
 - Evaluation methodology.
-- AI operational metrics.
-- Cost review process.
+- Cost and usage observability.
+- Clear quota and failure feedback.
 
 ### Exit Criteria
 
-- Usage controls are enforced server-side.
-- Users receive clear quota and failure feedback.
-- Requests cannot bypass configured budgets.
+- Allocation is enforced server-side.
+- Requests cannot bypass budgets.
+- Usage is accounted for consistently.
+- Provider costs can be measured or reasonably estimated.
+- Model tiers have measurable cost/quality profiles.
+- Users receive clear limit and failure feedback.
 - Evaluation is repeatable.
-- Cost and quality can be reviewed before major changes.
 
 ## 9. Phase 4 — AI-Assisted Document Workflows
 
 **Priority:** P1/P2  
-**Objective:** Introduce practical AI features that directly improve the user's document workflow.
+**Objective:** Deliver useful AI workflows that improve document creation, transformation, understanding, and organization.
 
-Features must be individually scoped, validated, tested, and delivered incrementally.
+Features must be independently scoped, validated, tested, and delivered incrementally.
 
 ### 9.1 Writing & Transformation
 
@@ -385,112 +511,118 @@ Features must be individually scoped, validated, tested, and delivered increment
 - Generate titles.
 - Generate descriptions.
 - Create tags.
-- Identify document themes.
+- Identify themes.
 - Produce structured summaries.
-- Generate question sets from content.
+- Generate questions from content.
 
 ### 9.3 Comparison & Analysis
 
 - Compare documents.
 - Identify differences.
-- Summarize changes in meaning.
+- Summarize meaning changes.
 - Detect overlapping concepts.
-- Highlight contradictions for user review.
-- Synthesize information from multiple sources.
+- Highlight contradictions for review.
+- Synthesize information across sources.
 
 ### 9.4 Discovery & Organization
 
 - Recommend related documents.
 - Suggest tags and categories.
-- Surface relevant existing knowledge.
-- Suggest links between concepts and documents.
-- Help users organize collections.
+- Surface existing knowledge.
+- Suggest concept/document links.
+- Help organize collections.
 
 ### Feature Acceptance Criteria
 
-Every AI-assisted workflow must:
+Every AI workflow must:
 
 - Have a clear user purpose.
-- Define input and output contracts.
+- Define input/output contracts.
 - Respect permissions.
+- Use appropriate model routing.
 - Validate responses.
 - Handle failures.
 - Preserve user content.
 - Provide user review and control.
-- Include appropriate tests.
+- Include tests.
 - Demonstrate acceptable latency and cost.
 - Avoid unnecessary context usage.
 
 ## 10. Phase 5 — AI-Native Knowledge Workspace
 
 **Priority:** P2/P3  
-**Objective:** Evolve SyncSphere toward an intelligent workspace where documents, knowledge, and user workflows are connected.
+**Objective:** Evolve SyncSphere toward an intelligent workspace where documents, knowledge, and workflows are connected.
 
-This phase is exploratory and dependent on the success and evaluation of earlier phases.
+This phase is exploratory and dependent on earlier phases demonstrating reliability, security, quality, and value.
 
 ### Potential Capabilities
 
 - Workspace-wide knowledge assistant.
 - Context-aware assistance across selected documents.
-- Knowledge graph or concept relationship exploration.
+- Concept and relationship exploration.
 - Personalized knowledge discovery.
 - Document-aware recommendations.
 - Intelligent organization and linking.
 - Multi-step AI workflows.
 - User-approved automation.
-- Proactive insights based on authorized content.
+- Proactive insights using authorized content.
 - Persistent task context where appropriate.
 
 ### Agentic Workflow Principles
 
-Future AI workflows may execute multiple steps, but must remain bounded.
+Future AI workflows must remain bounded and user-controlled.
 
 - Define explicit task scope.
-- Require authorization for every relevant data operation.
+- Enforce authorization for each relevant data operation.
 - Separate planning from execution.
 - Validate intermediate and final results.
 - Require confirmation for destructive or consequential actions.
 - Maintain transparency about actions and sources.
-- Provide cancellation and failure recovery.
-- Do not grant unrestricted workspace access.
+- Provide cancellation and recovery.
+- Avoid unrestricted workspace access.
 
 ### Exit Criteria
 
-Phase 5 capabilities are individually evaluated, scoped, and approved. AI actions remain traceable, permission-bound, user-controlled, and reversible where feasible.
+Each Phase 5 capability is separately evaluated and approved. AI actions remain permission-bound, traceable, user-controlled, and reversible where feasible.
 
 ## 11. Proposed AI Architecture Boundaries
 
 | Component | Responsibility |
 |---|---|
-| AI UI | User interactions, feedback, selection, status |
-| AI Entry Point | Trusted request boundary and orchestration entry |
-| Authorization | Identity, workspace/document permissions |
-| Task Router | Select appropriate task/workflow |
+| AI UI | User interactions, tier selection, preferences, feedback, status |
+| AI Entry Point | Trusted request boundary |
+| Authorization | Identity, document/workspace permissions |
+| Task Classifier | Determine task type and requirements |
+| AI Task Router | Route tasks to appropriate tier/workflow |
+| Model Registry | Model definitions, capabilities, configuration, lifecycle |
+| Provider Registry | Available providers and adapters |
+| Orchestration | Coordinate AI requests and workflow execution |
 | Context Manager | Select, bound, and prepare authorized context |
 | Prompt Manager | Task instructions and prompt versions |
-| Model Adapter | Provider/model interface and configuration |
-| Validation | Output schema, safety, formatting, and integrity |
-| Retrieval Layer | Knowledge search, ranking, source references |
-| Governance Layer | Quotas, budgets, rate limits, usage accounting |
-| Evaluation Layer | Quality, regressions, performance, cost |
-| Observability | Operational metrics and privacy-conscious diagnostics |
+| Validation | Output schema, safety, formatting, integrity |
+| Retrieval Layer | Search, ranking, knowledge references |
+| Governance Layer | Quotas, budgets, concurrency, rate limits |
+| Accounting | User credits, provider tokens, provider cost |
+| Evaluation Layer | Quality, regression, performance |
+| Observability | Metrics, diagnostics, privacy-conscious logs |
 
-These are logical boundaries. They do not require each component to be a separate package, service, or deployment.
+These are logical architecture boundaries. They do not mandate separate packages, services, or deployment infrastructure.
 
 ## 12. Security & Privacy Requirements
 
-- Authentication and authorization must be enforced server-side.
-- AI must never bypass existing workspace/document access rules.
-- Provider secrets must remain server-side.
-- User content must be treated as untrusted input.
-- Retrieved content must not be treated as trusted instructions.
-- Prompt injection risks must be considered in document retrieval and AI workflows.
-- Context should be limited to what the task requires.
-- AI outputs must not be trusted for authorization, database mutations, or security decisions.
-- Sensitive content should not be included in logs unnecessarily.
-- User content must not be overwritten without clear user intent and safe recovery.
-- Connected knowledge sources must have explicit permissions and scope.
-- Agentic actions must use bounded, validated tools.
+- Enforce authentication and authorization server-side.
+- Never bypass document or workspace access rules.
+- Keep provider credentials server-side.
+- Treat user content as untrusted input.
+- Treat retrieved content as untrusted data, not instructions.
+- Account for prompt injection.
+- Limit context to task requirements.
+- Never trust AI output for authorization or security decisions.
+- Avoid unnecessary sensitive information in logs.
+- Protect user content against unintended overwrites.
+- Require explicit permissions for connected sources.
+- Use bounded and validated tools for future agentic workflows.
+- Ensure model routing and fallback cannot bypass usage or security policies.
 
 ## 13. Dependencies & Phase Gates
 
@@ -498,48 +630,51 @@ These are logical boundaries. They do not require each component to be a separat
 |---|---|
 | Phase 0 | Recovery assessment and security foundation |
 | Phase 1 | Phase 0 acceptance |
-| Phase 2 | Stable AI foundation; document/data boundaries; content integrity |
-| Phase 3 | AI foundation and usage instrumentation; provider cost understanding |
-| Phase 4 | AI foundation; applicable retrieval/context capabilities for grounded features |
-| Phase 5 | Successful earlier phases; demonstrated quality, governance, and user value |
+| Phase 2 | Stable AI foundation, document boundaries, integrity |
+| Phase 3 | AI foundation, usage instrumentation, model/provider cost understanding |
+| Phase 4 | AI foundation; retrieval/context where needed |
+| Phase 5 | Successful earlier phases, quality, governance, and user value |
 
-Phases may overlap only when prerequisites are met, work is isolated, and risk is understood.
+Phases may overlap only when prerequisites are met, work is isolated, and risks are understood.
 
 ## 14. Risks & Mitigations
 
 | Risk | Mitigation |
 |---|---|
-| Hallucinated information | Retrieval grounding, validation, source attribution, user review |
-| Prompt injection | Treat documents as untrusted data; constrain instructions and tool permissions |
-| Unauthorized retrieval | Permission-aware retrieval and access tests |
-| AI provider/model changes | Model adapter, lifecycle monitoring, regression evaluation |
-| Excessive costs | Budgets, quotas, context limits, rate limits |
-| Poor retrieval quality | Retrieval evaluation, ranking improvements, relevant chunking |
-| Latency | Context optimization, bounded workflows, performance measurement |
+| Hallucinations | Grounding, validation, sources, user review |
+| Prompt injection | Treat documents as untrusted; constrain instructions and permissions |
+| Unauthorized retrieval | Permission-aware retrieval and access testing |
+| Provider/model lifecycle changes | Registry, adapters, lifecycle monitoring, evaluations |
+| Model routing errors | Explicit routing policies, validation, safe fallbacks |
+| Provider outages | Bounded retries, error normalization, availability handling |
+| Excessive costs | Allocation, budgets, context limits, concurrency, cost tracking |
+| Allocation/accounting mismatch | Reconciliation, explicit conversion rules, usage tests |
+| Poor retrieval | Retrieval evaluation, ranking and chunking improvements |
+| Latency | Context optimization, appropriate model tier, bounded workflows |
 | Content loss | User-controlled insertion, safe updates, recovery |
-| Overengineering | Phased implementation, modular monolith, evidence-driven dependencies |
-| AI feature sprawl | Feature acceptance criteria and product value review |
+| Overengineering | Modular monolith, phased delivery, evidence-driven design |
+| AI feature sprawl | Acceptance criteria and product value review |
 | Privacy exposure | Minimal context, safe logging, controlled sources |
-| Unreliable automation | Bounded actions, validation, confirmations, auditability |
+| Unreliable automation | Bounded actions, validation, confirmation, auditability |
 
 ## 15. Engineering Workflow
 
-Each AI work package follows this process:
+Every AI work package follows this workflow:
 
 1. Define the user problem and scope.
 2. Define input/output contracts and acceptance criteria.
 3. Identify security, privacy, cost, and failure risks.
 4. Inspect existing architecture and dependencies.
 5. Design the smallest appropriate implementation.
-6. Implement with tests-first where practical.
+6. Implement tests-first where practical.
 7. Evaluate outputs against representative cases.
 8. Verify failure, timeout, and recovery behavior.
 9. Review performance, cost, and maintainability.
 10. Document decisions and limitations.
 11. Commit a logical, verified change.
-12. Obtain owner acceptance when required.
+12. Obtain owner acceptance where required.
 
-No AI feature is considered complete solely because it produces a successful response in a happy-path demonstration.
+An AI feature is not complete solely because it produces a successful response in a happy-path demonstration.
 
 ## 16. Out of Scope Unless Separately Approved
 
@@ -547,36 +682,45 @@ No AI feature is considered complete solely because it produces a successful res
 - Unrestricted AI access to the entire workspace.
 - Automatic publishing or sharing.
 - Unreviewed AI content replacement.
-- Independent AI agents with unbounded permissions.
-- Unnecessary external microservices.
-- Paid provider/service commitments without approval.
+- Unbounded independent AI agents.
+- Unnecessary microservices.
+- Paid provider commitments without approval.
 - Large-scale data migrations.
-- AI-generated decisions that replace user control.
+- AI decisions replacing user control.
+- Unconfirmed provider additions.
+- Implementation of allocation policy without validated accounting design.
 
 ## 17. Success Criteria
 
 AI modernization is successful when SyncSphere:
 
-- Has a secure, maintainable, modular AI foundation.
-- Uses supported and documented model configurations.
-- Produces reliable and validated outputs.
+- Has a secure, modular, multi-model-capable AI foundation.
+- Supports model tiers and appropriate task routing.
+- Can evolve providers/models without unrelated feature rewrites.
+- Uses supported model configurations.
+- Produces reliable, validated outputs.
 - Understands authorized document context.
-- Provides source-grounded knowledge answers when retrieval is used.
-- Offers useful document workflows beyond basic generation.
-- Enforces cost, context, rate, and usage controls.
+- Provides grounded answers with sources when retrieval is used.
+- Offers practical AI document workflows.
+- Enforces allocation, request, concurrency, context, and cost controls.
+- Distinguishes user allocation from provider token usage and monetary cost.
 - Evaluates quality and regressions systematically.
-- Handles AI failures without losing user content.
+- Handles failures without losing user content.
 - Remains user-controlled, privacy-conscious, and maintainable.
-- Demonstrates measurable value from each delivered AI capability.
+- Demonstrates measurable value from each delivered capability.
 
 ## 18. Roadmap Maintenance
 
-This roadmap is expected to evolve as SyncSphere's recovery, usage patterns, AI provider capabilities, cost data, evaluation results, and product priorities become clearer.
+This is a living roadmap.
 
-Phase scope, acceptance criteria, budgets, and architecture may be refined based on evidence.
+It records the currently agreed direction and leaves implementation details open until they are justified by engineering investigation, benchmarking, testing, and product requirements.
 
-Material scope expansions, new paid services, privacy/security implications, destructive operations, or changes to user-control principles require Project Owner approval.
+Future revisions may refine model assignments, providers, allocation accounting, acceptance criteria, phases, or architecture.
+
+Material scope expansions, paid services, privacy/security implications, destructive operations, and changes to user-control principles require Project Owner approval.
+
+No implementation is authorized solely by the existence of a roadmap entry.
 
 ---
 
-**End of AI Modernization & Evolution Roadmap — Version 0.1 — Approved by Evans Abraham — 2026-11-28**
+**End of AI Modernization & Evolution Roadmap — Version 0.2 — Approved by Evans Abraham — 2026-11-28**
