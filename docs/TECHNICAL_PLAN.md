@@ -2,11 +2,12 @@
 
 **Project:** SyncSphere  
 **Document Status:** Approved  
-**Version:** 0.3  
+**Version:** 0.4  
 **Document Type:** Technical Architecture & Implementation Plan  
-**Approved By:** Evans Abraham (Project Owner)  
+**Approved By:** Evans Abraham
+**Approval Date:** 2026-11-28  
 **Target Branch:** `agentic-development`  
-**Parent Documents:** Project Charter v0.3 · Product Requirements v0.2 · Recovery Roadmap v0.3
+**Parent Documents:** Project Charter v0.3 · Product Requirements v0.2 · Recovery Roadmap v0.4 · AI Modernization Roadmap v0.1
 
 ---
 
@@ -239,10 +240,14 @@ Provide safe user errors, useful server diagnostics, distinguishable operational
 
 Recovery is complete when architecture/boundaries are implemented and verified; auth/access and Firestore rules are tested; core CRUD and persistence are reliable; editor lifecycle/content compatibility is sound; AI is secured, validated, and uses a documented supported model with tested failure handling; responsive usability and PDF export meet acceptance criteria; test/lint/build/CI are functioning; setup docs and risks are current; and Project Owner approves.
 
-## 21. Plan Maintenance
+## 21. AI Modernization Roadmap Alignment
+
+Broader AI capability evolution is defined in the separate [AI Modernization & Evolution Roadmap](AI_MODERNIZATION_ROADMAP.md) v0.1. The technical plan governs implementation constraints for that track: keep AI logical boundaries modular within the existing application unless evidence justifies separate services; enforce trusted server-side identity and authorization; treat documents/retrieved context as untrusted; validate outputs; minimize context and sensitive logging; and implement budgets, rate limits, evaluation, and observability only through scoped, tested work packages. RAG/indexing must preserve document/workspace access controls and source traceability. Proactive or agentic workflows remain future, bounded, user-approved capabilities—not authorization for autonomous destructive actions.
+
+## 22. Plan Maintenance
 
 Refine the plan based on evidence. Routine implementation choices within scope may be documented; material architecture, data, scope, cost, security, or feature changes require owner review.
 
 ---
 
-**End of Technical Plan — Version 0.3 — Approved**
+**End of Technical Plan — Version 0.4 — Approved by Evans Abraham — 2026-11-28
