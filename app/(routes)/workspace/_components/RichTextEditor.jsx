@@ -26,6 +26,7 @@ function RichTextEditor({ params }) {
   const editorRef = useRef(null);
   const unsubscribeRef = useRef(null);
   const snapshotCoordinatorRef = useRef(null);
+  const suppressEditorChangeRef = useRef(false);
   const { user } = useUser();
   const { status: bridgeStatus } = useFirebaseAuthBridge();
   const [documentOutput, setDocumentOutput] = useState(null);
@@ -61,6 +62,7 @@ function RichTextEditor({ params }) {
     }, () => active && bridgeStatus === 'authenticated' && Boolean(user));
 
     const saveDocument = () => {
+      if (suppressEditorChangeRef.current) return;
       if (!active || bridgeStatus !== 'authenticated' || !user || !editorRef.current || !snapshotCoordinatorRef.current?.initialized) return;
       snapshotCoordinatorRef.current.markLocalEdit();
       autosaveQueue.notify();
@@ -76,8 +78,14 @@ function RichTextEditor({ params }) {
         if (decision.shouldRender && data.output) {
           try {
             const parsed = typeof data.output === 'string' ? (data.output.trim() ? JSON.parse(data.output) : null) : data.output;
-            if (parsed) editorInstance?.render(parsed);
+            if (parsed) {
+              suppressEditorChangeRef.current = true;
+              Promise.resolve(editorInstance?.render(parsed)).finally(() => {
+                suppressEditorChangeRef.current = false;
+              });
+            }
           } catch (error) {
+            suppressEditorChangeRef.current = false;
             console.error('Error parsing document output:', error);
           }
         }
