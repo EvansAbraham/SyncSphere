@@ -23,6 +23,8 @@ function BridgeState() {
 }
 
 describe("FirebaseAuthBridgeProvider", () => {
+  afterEach(() => cleanup());
+
   beforeEach(() => {
     vi.clearAllMocks();
     firebaseAuth.currentUser = null;
