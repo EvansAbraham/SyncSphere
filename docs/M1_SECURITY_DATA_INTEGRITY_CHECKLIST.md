@@ -33,10 +33,12 @@
 - **Owner-approved design draft:** [docs/security/FIRESTORE_AUTHORIZATION_DESIGN.md](FIRESTORE_AUTHORIZATION_DESIGN.md). Approval recorded 2026-11-28. Open decisions remain tracked and must be resolved before WP-04 rules implementation. No rules implementation, data migration, or production change has been performed.
 
 ### WP-03 — Clerk ↔ Firebase trusted identity bridge (in progress)
-- [ ] Implement trusted Clerk identity to Firebase UID/token exchange according to the approved architecture.
+- [x] Inventory current bridge prerequisites (2026-11-28): `firebase-admin` is already declared in `package.json`; `lib/firebase-admin/admin.js` has a server-only Admin initializer and validates client/Admin project ID match; `config/firebaseAuth.js` exports Firebase Client Auth via `getAuth(app)`. Existing unit tests cover Admin initialization and Firebase client config.
+- [ ] Implement trusted Clerk identity to Firebase UID/token exchange according to the approved architecture. **No endpoint or client token exchange currently exists in source review.**
 - [ ] Ensure client-provided user/org IDs are not treated as proof of identity.
 - [ ] Add bridge tests for valid, invalid, missing, expired, and mismatched identity/token cases.
 - [ ] Verify session lifecycle and sign-out behavior.
+- **Scope note:** Stage A prerequisite work is partly present; this checkpoint is documentation/inventory only. No env values, Firestore Rules/data, or production deployment have been touched. Next implementation slice is the trusted token endpoint (Stage B), with origin/CSRF and abuse-control design reviewed before client lifecycle wiring.
 - **Dependency:** WP-02 design.
 
 ### WP-04 — Firestore rules implementation & validation
@@ -108,7 +110,7 @@
 
 ## Current next action
 
-WP-01 is complete. WP-02 authorization design draft is committed for Project Owner review; resolve open design decisions before implementation. Gemini key protection remains tracked in WP-05.
+WP-01 is complete. WP-02 authorization design is Owner-approved with remaining policy decisions tracked. WP-03 is underway: existing Firebase Admin/client Auth prerequisites are verified; implement and test the trusted token endpoint next. Gemini key protection remains tracked in WP-05.
 
 ### WP-01 follow-up — identity bridge investigation and Gemini risk handoff (2026-11-28)
 
