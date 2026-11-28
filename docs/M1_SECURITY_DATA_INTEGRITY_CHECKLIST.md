@@ -23,16 +23,16 @@
 - [x] Build and inspect isolated client bundles for secret leakage (completed; production/deployed runtime behavior remains unverified).
 - **Disposition:** Source audit and isolated client-bundle inspection completed. Firebase Admin module uses `server-only` and server credential variables; client Firebase configuration contains only web-client settings. Direct client Firestore access remains present. Gemini SDK is used in a client module with `NEXT_PUBLIC_GEMINI_API_KEY`, exposing the credential to browsers. Clerk-to-Firebase trusted token exchange was not found in the inspected source. Isolated bundle scan found no Firebase Admin module identifier, private-key header, service-account private-key/client-email fields, Google API key token-like value, or Gemini key env name. The artifact did contain Gemini SDK code and only the inspection placeholder API key; the scan does not prove deployed runtime behavior or that the live key is absent from any other build.
 
-### WP-02 — Firestore authorization & tenant-isolation design (in progress — draft committed)
+### WP-02 — Firestore authorization & tenant-isolation design (Owner-approved draft; open decisions tracked)
 - [x] Map existing workspace/document relationships and ownership/org semantics (source review completed; existing ownership fields are email/org-oriented and not trusted).
 - [x] Draft trusted identity and authorization model for individual users and Clerk organizations; owner/org role and membership mapping decisions remain open for review.
 - [x] Draft authorization rules for workspace/document read, create, update, delete, and cross-resource relationship checks; final role policy review pending.
 - [x] Draft preservation and migration approach; mapping remains unexecuted and approval-gated.
 - [x] Define test scenarios for unauthorized access, cross-user/org access, forged ownership fields, and document/workspace relationship mismatches.
-- [ ] Project Owner review of design and open decisions before implementation.
-- **Design draft:** [docs/security/FIRESTORE_AUTHORIZATION_DESIGN.md](FIRESTORE_AUTHORIZATION_DESIGN.md). No rules implementation, data migration, or production change has been performed. **Gate:** Owner review and resolution/acceptance of open decisions before WP-03/WP-04 implementation.
+- [x] Project Owner review of design draft (approved 2026-11-28; remaining decisions are tracked for resolution before WP-04 implementation).
+- **Owner-approved design draft:** [docs/security/FIRESTORE_AUTHORIZATION_DESIGN.md](FIRESTORE_AUTHORIZATION_DESIGN.md). Approval recorded 2026-11-28. Open decisions remain tracked and must be resolved before WP-04 rules implementation. No rules implementation, data migration, or production change has been performed.
 
-### WP-03 — Clerk ↔ Firebase trusted identity bridge
+### WP-03 — Clerk ↔ Firebase trusted identity bridge (in progress)
 - [ ] Implement trusted Clerk identity to Firebase UID/token exchange according to the approved architecture.
 - [ ] Ensure client-provided user/org IDs are not treated as proof of identity.
 - [ ] Add bridge tests for valid, invalid, missing, expired, and mismatched identity/token cases.
