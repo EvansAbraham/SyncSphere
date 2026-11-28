@@ -1,8 +1,11 @@
-### WP-03-D1 editor snapshot integrity — implementation draft (2026-11-28)
-- Branch: `wp-03-d1-editor-snapshot-integrity` (isolated; not merged).
-- Added `lib/document-snapshot-coordinator.js` and unit tests for initial snapshot policy, local dirty-state protection, persistence revisions, and snapshot echo behavior.
-- Updated RichTextEditor to hide the editing surface until initial snapshot resolution; preserve local dirty content when remote snapshots arrive; suppress autosave events caused by programmatic renders; and track persisted local revisions.
-- **Validation is pending:** neither local test/build execution nor branch-specific CI has been performed. Existing CI workflow currently checks out the base `agentic-development` branch even on PR events, so a PR alone would not test the feature branch. No production deployment or data mutation.
+### WP-03-D1 editor snapshot integrity — merged, CI test correction pending (2026-11-28)
+- Implemented coordinator, Editor integration, unit tests, and docs; merged to `agentic-development` via `66314c04562a39e1b332763c266e8d8e6e70fcf6`.
+- CI checkout was corrected to checkout the triggering commit, removing the hardcoded base ref.
+- CI run #135 / ID `46162201522` failed in the new test `ignores snapshots from the local writer while still resolving initialization`: expected `false`, received `true`. The implementation correctly permits the first local-authored snapshot to render for initialization; the test expectation was wrong.
+- Corrected the regression test to assert first local snapshot renders and a later local-write echo is ignored. Correction commit on `agentic-development`: `3da302a12e74c5e59cf4207b6e1815a8fa264913`.
+- **Verification pending:** the test correction has not yet been validated by a fresh CI run. GitHub connector supports reading runs/logs but cannot dispatch a run; API commits have not produced a new run in the visible list.
+- **Cleanup pending:** merged feature branch `wp-03-d1-editor-snapshot-integrity` still exists. The connected GitHub actions available here are read/update-ref, but do not provide branch deletion; deletion must be done through GitHub UI or a suitable delete-ref integration.
+- No production deployment or data mutation.
 
 # M1 Security Findings & Technical Debt Master Register
 
