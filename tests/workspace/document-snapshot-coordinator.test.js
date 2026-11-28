@@ -11,6 +11,14 @@ describe("document snapshot coordinator", () => {
     expect(coordinator.hasLocalChanges).toBe(false);
   });
 
+  it("renders the initial snapshot even when it was authored by the current user", () => {
+    const coordinator = createDocumentSnapshotCoordinator();
+    const decision = coordinator.receiveSnapshot({ isLocalWrite: true });
+    expect(decision.wasInitialized).toBe(false);
+    expect(decision.shouldRender).toBe(true);
+    expect(coordinator.initialized).toBe(true);
+  });
+
   it("preserves edits made before the initial snapshot arrives", () => {
     const coordinator = createDocumentSnapshotCoordinator();
     coordinator.markLocalEdit();
