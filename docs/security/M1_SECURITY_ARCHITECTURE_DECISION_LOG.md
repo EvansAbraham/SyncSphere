@@ -87,7 +87,7 @@ Based on source reviews and the current baseline/design records, the pre-M1 appl
 
 - **Date:** 2026-11-28
 - **Work package:** WP-03 / ADR-001
-- **Status:** Architecture approved; endpoint implementation in progress
+- **Status:** Architecture approved; Stage B endpoint and Stage C lifecycle verified; Stage D integration pending
 - **Original behavior/risk:** Clerk authenticated the application, while Firebase client Auth was independent. Firestore requests did not yet have a verified Firebase UID corresponding to the Clerk user in the inspected source.
 - **Decision/change:** Clerk remains the application identity provider. A trusted server verifies the Clerk session and derives Firebase UID exclusively from Clerk's stable `userId`. Firebase UID must equal Clerk user ID. Email is not the authorization identity; org selection remains separate.
 - **Rationale:** Provide Firestore Rules a trusted identity while preserving the existing Firebase client-side data-access approach.
@@ -109,7 +109,7 @@ Based on source reviews and the current baseline/design records, the pre-M1 appl
 - **Security impact:** Provides a trusted token issuance path, mitigates token response caching, and checks origin to reduce cross-origin misuse. Origin validation is not a complete abuse defense.
 - **Verification:** Five focused route tests cover missing/cross-origin headers, unauthenticated requests, verified UID derivation/spoofed request identity, and generic error handling. CI run #85 (2026-11-28) completed successfully, including lint, tests, and production build; logs were inspected and route appeared in build output.
 - **Files/evidence:** `app/api/auth/firebase-token/route.js`; `tests/auth/firebase-token-route.test.js`; CI run [#85](https://github.com/EvansAbraham/SyncSphere/actions/runs/46152946990).
-- **Residual risks / follow-up:** No distributed rate limit or robust abuse control has been implemented. Serverless in-memory throttling would not be sufficient as a distributed control. Origin/Host handling must be reviewed against deployment/proxy behavior. Client Auth lifecycle has not yet been implemented. Endpoint is not deployed or claimed production-ready.
+- **Residual risks / follow-up:** No distributed rate limit or robust abuse control has been implemented. Serverless in-memory throttling would not be sufficient as a distributed control. Origin/Host handling must be reviewed against deployment/proxy behavior. Client lifecycle is now implemented and CI-verified but not yet integrated with/gating Firestore consumers. Endpoint is not deployed or claimed production-ready.
 
 ### ADR-M1-006 — Synchronize Firebase Client Auth with Clerk lifecycle
 
@@ -178,7 +178,7 @@ These are narrow, evidence-backed accomplishments and must not be interpreted as
 For detailed status and evidence, use the M1 checklist and linked work-package documents. CI run claims are scoped to the recorded commit and jobs; do not infer deployed production behavior from CI success.
 
 - [WP-01 runtime bundle inspection workflow run #1](https://github.com/EvansAbraham/SyncSphere/actions/runs/46150099812)
-- [WP-03 Stage B CI run #85](https://github.com/EvansAbraham/SyncSphere/actions/runs/46152946990)
+- [WP-03 Stage B CI run #85](https://github.com/EvansAbraham/SyncSphere/actions/runs/46152946990)\n- [WP-03 Stage C CI run #95](https://github.com/EvansAbraham/SyncSphere/actions/runs/46156856828)
 - [WP-02 authorization design](FIRESTORE_AUTHORIZATION_DESIGN.md)
 - [WP-03 bridge specification](FIREBASE_AUTH_BRIDGE.md)
 - [ADR-001 identity bridge](../architecture/ADR-001-clerk-firebase-auth-bridge.md)
