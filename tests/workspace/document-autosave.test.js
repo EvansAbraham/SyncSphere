@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, waitFor } from "vitest";
 import { createAutosaveQueue } from "../../lib/document-autosave.js";
 
 function deferred() {
