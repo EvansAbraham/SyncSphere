@@ -19,10 +19,10 @@
 
 ### WP-01 — Server-only boundary audit
 - [x] Source review of Firebase Admin isolation, client Firebase configuration, direct client-side Firestore access, Gemini client usage, and Clerk/Firebase identity bridge.
-- [ ] Verify production/client bundles and deployed/runtime behavior for secret leakage (not yet performed).
-- **Disposition:** Source audit completed. Admin SDK boundary appears isolated; direct client Firestore access and client Gemini credential exposure are confirmed concerns; Clerk-to-Firebase bridge is not implemented.
+- [ ] Verify production/client bundles and deployed/runtime behavior for secret leakage (attempted 2026-11-28; blocked—compiled bundle/runtime could not be accessed).
+- **Disposition:** Source audit completed. Admin SDK boundary appears isolated; direct client Firestore access and client Gemini credential exposure are confirmed concerns; Clerk-to-Firebase bridge is not implemented. Runtime/bundle scan remains blocked.
 
-### WP-02 — Firestore authorization & tenant-isolation design (NEXT)
+### WP-02 — Firestore authorization & tenant-isolation design (pending WP-01 closure)
 - [ ] Map existing workspace/document relationships and ownership/org semantics.
 - [ ] Define trusted identity and authorization model for individual users and Clerk organizations.
 - [ ] Define authorization rules for workspace/document read, create, update, delete, and cross-resource relationship checks.
@@ -101,9 +101,9 @@
 - **Direct client Firestore access:** confirmed across workspace creation/list/deletion, document metadata/list/deletion, and editor persistence.
 - **Gemini credential boundary:** confirmed client-side SDK use with `NEXT_PUBLIC_GEMINI_API_KEY`; credential is not secret and must move server-side.
 - **Clerk/Firebase bridge:** trusted token exchange not implemented in inspected source.
-- **Client bundle/runtime scan:** not performed.
-- **Production changes/deployments:** none performed during audit.
+- **Client bundle/runtime scan:** attempted against the latest READY Vercel preview for branch `agentic-development` (commit `5b55eb7`); Vercel deployment file-tree API returned `404 file tree not found`, web access could not open the preview, and the execution environment could not resolve external DNS. Build logs confirm successful Next.js compilation and list chunk sizes, but do not provide compiled bundle contents; no runtime secret scan can be claimed.
+- **Production configuration or deployment changes:** none performed by this audit. The branch commit's Vercel preview deployment was observed as `READY` (auto-deployment from the connected Git branch), but no deployment was initiated by this scan.
 
 ## Current next action
 
-Work **WP-02 only**: inspect the existing data model and access paths, propose a secure authorization/tenant-isolation design that preserves existing user data, and present it for review before changing code or rules.
+Complete WP-01 runtime/bundle scan when access to deployed assets or a local build artifact is available. WP-02 remains paused until WP-01 is closed or its limitation is explicitly accepted.
