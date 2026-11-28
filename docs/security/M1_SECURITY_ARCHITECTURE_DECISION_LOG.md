@@ -48,8 +48,8 @@ Based on source reviews and the current baseline/design records, the pre-M1 appl
 |---|---|---|---|
 | 2026-11-28 | WP-01 / Firebase Admin boundary | Verified (source + bundle inspection) | Preserve Admin SDK as server-only; lazy initialization and project consistency validation. |
 | 2026-11-28 | WP-02 / Firestore authorization | Approved design; open policy decisions | Default-deny, stable UID, trusted organization membership, inherited workspace/document authorization, preservation-first migration. |
-| 2026-11-28 | WP-03 / Clerk-Firebase bridge | In progress | Accepted custom-token bridge; prerequisite inventory completed; Stage B token endpoint committed and CI-verified. |
-| TBD | WP-03 Stage C/D/E | Pending | Client Auth lifecycle, integration/regression, and acceptance. |
+| 2026-11-28 | WP-03 / Clerk-Firebase bridge | In progress | Stage B token endpoint and Stage C client lifecycle implemented and CI-verified; Stage D integration remains. |
+| 2026-11-28 | WP-03 Stage C | Verified | Firebase Auth lifecycle provider synchronizes Clerk identity, sign-out and account switches; readiness/error hook; focused tests and CI #95 green. Stage D/E remain. |
 | TBD | WP-04 Rules implementation | Pending | Rules and Emulator tests depend on identity bridge and final policy decisions. |
 | TBD | WP-05 Gemini credential boundary | Deferred | Server-side AI request path, validation, authorization, abuse controls, and exposed-key response. |
 
@@ -111,6 +111,20 @@ Based on source reviews and the current baseline/design records, the pre-M1 appl
 - **Files/evidence:** `app/api/auth/firebase-token/route.js`; `tests/auth/firebase-token-route.test.js`; CI run [#85](https://github.com/EvansAbraham/SyncSphere/actions/runs/46152946990).
 - **Residual risks / follow-up:** No distributed rate limit or robust abuse control has been implemented. Serverless in-memory throttling would not be sufficient as a distributed control. Origin/Host handling must be reviewed against deployment/proxy behavior. Client Auth lifecycle has not yet been implemented. Endpoint is not deployed or claimed production-ready.
 
+### ADR-M1-006 — Synchronize Firebase Client Auth with Clerk lifecycle
+
+- **Date:** 2026-11-28
+- **Work package:** WP-03 Stage C
+- **Status:** Implemented and CI-verified; Stage D integration pending
+- **Original behavior/risk:** Firebase Client Auth had been initialized separately from Clerk; workspace/document consumers could execute Firestore calls without waiting for a trusted Firebase identity to be established.
+- **Decision/change:** Mount `FirebaseAuthBridgeProvider` inside `ClerkProvider`. When Clerk is ready and signed in, the provider POSTs to the trusted token endpoint with same-origin credentials and `cache: no-store`, then signs in Firebase with the server-minted custom token. On sign-out it clears Firebase Auth. On account switch it clears the prior UID before exchanging a token for the new Clerk user. A generation/cancellation guard prevents stale requests from applying, synchronization is serialized, and the returned Firebase UID is checked against the Clerk user ID. Provider state is exposed through `useFirebaseAuthBridge()`.
+- **Rationale:** Prevent Firestore operations from running with an absent or stale Firebase identity, reduce account-switch race risk, and make bridge readiness/errors observable to consumer components.
+- **Alternatives considered:** Firestore calls continuing without a bridge (rejected for Stage D); client-supplied UID (rejected); parallel uncontrolled token exchanges (rejected).
+- **Security impact:** Establishes client identity synchronization and safe state visibility. It does not authorize workspace/document access; Firestore Rules remain the enforcement boundary.
+- **Verification:** Focused tests cover successful token exchange, sign-out cleanup, prior-UID cleanup, account switching, endpoint failure, and UID mismatch. CI run #95 completed successfully on commit `d8cb30f3242827bff9c920554be40034e2f221b9`: ESLint, tests, and production build passed. Evidence: [run #95](https://github.com/EvansAbraham/SyncSphere/actions/runs/46156856828).
+- **Files/evidence:** `app/providers/FirebaseAuthBridge.jsx`, `app/layout.js`, `tests/auth/firebase-auth-bridge-provider.test.jsx`, bridge specification, and WP-03 checklist.
+- **Residual risks / follow-up:** Firestore consumers have not yet been gated on readiness; Stage D owns consumer integration/regression. Explicit retry/backoff and Firebase Auth Emulator coverage remain pending. Token endpoint distributed abuse/rate limiting and deployment-origin/proxy validation remain open. No production deploy, Rules changes, environment-variable changes, or data migration occurred.
+
 ### ADR-M1-005 — Move Gemini API key and model requests behind a trusted server boundary
 
 - **Date:** 2026-11-28
@@ -143,12 +157,12 @@ These are narrow, evidence-backed accomplishments and must not be interpreted as
 
 - Firebase Admin initialization has a reviewed server-only boundary and project consistency checks.
 - A Firestore authorization model has been approved, though not enforced yet.
-- A server token endpoint now derives Firebase custom-token UID from the verified Clerk session and ignores caller identity fields.
+- A server token endpoint now derives Firebase custom-token UID from the verified Clerk session and ignores caller identity fields.\n- A root-mounted client provider synchronizes Firebase Auth sign-in/sign-out and account switches with Clerk, exposes readiness/error state, and has focused CI-verified lifecycle tests.
 - Focused token endpoint tests and CI checks pass for the recorded Stage B commit.
 
 ## 8. Deferred work, blockers, and known risks
 
-- **WP-03:** Client Firebase Auth synchronization, loading/error states, sign-out, account-switch/race handling, retry/token refresh, integration regression, acceptance remain pending. Endpoint abuse/rate control remains an open security follow-up.
+- **WP-03:** Stage B token endpoint and Stage C client lifecycle are implemented and CI-verified. Stage D Firestore consumer readiness gating/integration regression and Stage E acceptance remain pending. Explicit retry/backoff and Emulator coverage are deferred; endpoint abuse/rate control and proxy/origin review remain open.
 - **WP-04:** Strict Rules implementation is blocked on completing the bridge and resolving authorization-policy/schema/membership/query/migration decisions. No production Rules have changed.
 - **WP-05:** Gemini server-side migration, validation, authorization, abuse controls, and exposed-key restriction/rotation plan pending. No environment values or credential changes have been made.
 - **WP-06:** Sensitive-data/API-exposure review pending.
@@ -181,4 +195,4 @@ For detailed status and evidence, use the M1 checklist and linked work-package d
 
 ## 11. Update history
 
-- **2026-11-28:** Initial log created with pre-M1 baseline, WP-01, WP-02, WP-03 identity/token endpoint decisions, WP-05 deferred direction, milestone comparison, and current risks.
+- **2026-11-28:** Initial log created with pre-M1 baseline, WP-01, WP-02, WP-03 identity/token endpoint decisions, WP-05 deferred direction, milestone comparison, and current risks.\n- **2026-11-28:** Added ADR-M1-006 for WP-03 Stage C client lifecycle, updated WP-03 status/evidence, and recorded interview narrative takeaways (functionality-first baseline → security audit → trusted identity bridge → remaining integration/enforcement work).
